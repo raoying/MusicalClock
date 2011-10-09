@@ -16,7 +16,6 @@ import net.rim.device.api.ui.component.LabelField;
 import net.rim.device.api.ui.component.Dialog; 
 import net.rim.device.api.ui.Field;
 import net.rim.device.api.ui.component.NullField;
-import net.rim.device.api.ui.container.MainScreen;
 import net.rim.device.api.ui.container.*;
 import net.rim.device.api.ui.component.*;
 import net.rim.device.api.system.RealtimeClockListener;
@@ -28,6 +27,7 @@ import net.rim.blackberry.api.browser.*;
 
 import net.rim.device.api.system.*;
 import com.karvitech.api.appTools.*;
+import com.karvitech.api.weather.DayWeatherInfo;
 import com.karvitech.apps.alarmlib.*;
 //#ifdef FREE_VERSION
 //import net.rim.blackberry.api.advertising.app10432.Banner;
@@ -81,6 +81,15 @@ class MusicalClockMainScreen extends MainScreen implements ConfigurationListener
             ((UiApplication)(Application.getApplication())).pushScreen(AboutScreen.getInstance());
         }
     }; 
+    private MenuItem _weatherMenuItem = new MenuItem("Weather", 100, 10)
+    {   
+        public void run()
+        {
+		    String url = "http://api.yr.no/weatherapi/locationforecast/1.8/?lat=60.10;lon=9.58";
+		    url = "com.karvitech.apps.musicalclock.MusicalClockApp";
+		    DayWeatherInfo.parseXML(url);
+        }
+    };
         
     private MenuItem _shutDownMenuItem = new MenuItem("Shut Down", 100, 10)
     {
@@ -349,6 +358,7 @@ class MusicalClockMainScreen extends MainScreen implements ConfigurationListener
         }*/
         menu.add(_changeStyleMenuItem);        
         menu.add(_shutDownMenuItem);
+        menu.add(_weatherMenuItem);
         menu.addSeparator();
         menu.add(_aboutMenuItem);
         if(Configuration.isFreeVersion()) {

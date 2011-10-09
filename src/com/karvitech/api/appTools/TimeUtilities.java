@@ -231,16 +231,16 @@ public class TimeUtilities {
     	DateFormat df = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
     	int index = str.indexOf("T");
     	String dateStr = str.substring(0, index);
-    	String timeStr = str.substring(index+1, str.length() - 2);
+    	String timeStr = str.substring(index+1, str.length() - 1);
     	String [] tokens = Util.split(dateStr, "-");
-    	String [] timeTokens = Util.split(dateStr, ":");
+    	String [] timeTokens = Util.split(timeStr, ":");
     	
     	TimeZone tz = TimeZone.getTimeZone(DateTimeUtilities.GMT);
     	Calendar cal = Calendar.getInstance(tz);
     	
     	int[] timeFields = new int[7];                                
     	timeFields[0] = Integer.parseInt(tokens[0]); // year
-    	timeFields[1] = Integer.parseInt(tokens[1]); // month 
+    	timeFields[1] = Integer.parseInt(tokens[1]) - 1; // month 
     	timeFields[2] = Integer.parseInt(tokens[2]); // day
     	
     	timeFields[3] = Integer.parseInt(timeTokens[0]); // hour

@@ -3,7 +3,9 @@ package com.karvitech.api.weather;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.Calendar;
 import java.util.Date;
+import java.util.TimeZone;
 import java.util.Vector;
 
 import javax.microedition.io.Connector;
@@ -120,7 +122,7 @@ public class DayWeatherInfo {
 			// get the list of the time elements
 			NodeList nodeList = doc.getElementsByTagName("time");
 			String startTimeOfDay = null;
-			Vector dayInfoList = new Vector();
+			//Vector dayInfoList = new Vector();
 			
 			int index = 0;
 			int totalNodes = nodeList.getLength();
@@ -147,13 +149,17 @@ public class DayWeatherInfo {
 					dayWeatherInfo =  new DayWeatherInfo();
 					forecasts.addElement(dayWeatherInfo);
 					startTimeOfDay = sectionStartTime;
+					dayWeatherInfo.dateStr = startTimeOfDay;
 				}
-				else if(isANewDay(sectionStartTime,startTimeOfDay )) {
-						// starting a new day, add the current data into the vector and create a new 
-						// object for the new day
-						dayInfoList.addElement(dayWeatherInfo);
-						dayWeatherInfo =  new DayWeatherInfo();
-						startTimeOfDay = sectionStartTime;
+				else if(sectionStartTime.equalsIgnoreCase(endTime) && isANewDay(sectionStartTime,startTimeOfDay )) {
+					// only check if it is a new day for point data, period data in the beginning of
+					// new day has 6 hours of data from last day
+					// starting a new day, add the current data into the vector and create a new 
+					// object for the new day
+					forecasts.addElement(dayWeatherInfo);
+					dayWeatherInfo =  new DayWeatherInfo();
+					startTimeOfDay = sectionStartTime;
+					dayWeatherInfo.dateStr = startTimeOfDay;
 											
 				}
 				// the node sequence is one time element that is the info for a time point
@@ -205,13 +211,30 @@ public class DayWeatherInfo {
 		Date sectionTime = TimeUtilities.stringToDate(sectionStartTime);
 		Date startDayTime = TimeUtilities.stringToDate(startTimeOfDay);
 		
-		return DateTimeUtilities.isSameDate(sectionTime.getTime(),startDayTime.getTime());
+		if(DateTimeUtilities.isSameDate(sectionTime.getTime(),startDayTime.getTime(), TimeZone.getDefault(), TimeZone.getDefault())) {
+			/*Calendar cal = Calendar.getInstance();
+			cal.setTime(sectionTime);
+			int[] fields = DateTimeUtilities.getCalendarFields(cal, null);
+			int firstDate = fields[2];
+			cal.setTime(startDayTime);
+			fields = DateTimeUtilities.getCalendarFields(cal, null);
+			int secondDate = fields[2];*/
+			return false;
+		}
+		return true;
+		//return !DateTimeUtilities.isSameDate(sectionTime.getTime(),startDayTime.getTime());
 		//return false;
 	}
 
 	public static InputStream readXmlFromUrl(String uri) {
         try {
-
+        	InputStream is;
+            Class classs = Class.forName(uri);
+            
+            
+            //to actually retrieve the resource prefix the name of the file with a "/"
+            is = classs.getResourceAsStream("/weather_data.xml");
+/*
         	HttpConnection	conn = (HttpConnection)Connector.open(uri);
         	int rc = conn.getResponseCode();
         	if (rc != HttpConnection.HTTP_OK)
@@ -219,7 +242,7 @@ public class DayWeatherInfo {
         		throw new IOException("HTTP response code: " + rc);
         	}
         	
-            InputStream is = conn.openInputStream();
+            is = conn.openInputStream();*/
             return is;
         }
         catch (Exception e) {
