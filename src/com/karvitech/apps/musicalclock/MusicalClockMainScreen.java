@@ -22,12 +22,18 @@ import net.rim.device.api.system.RealtimeClockListener;
 import net.rim.device.api.ui.MenuItem;
 //import com.karvitech.apps.utilities.*;
 import javax.microedition.content.*;
+import javax.microedition.location.Location;
+import javax.microedition.location.LocationListener;
+import javax.microedition.location.LocationProvider;
+
 import net.rim.blackberry.api.browser.*;
 
 
 import net.rim.device.api.system.*;
 import com.karvitech.api.appTools.*;
+import com.karvitech.api.location.LocationHelper;
 import com.karvitech.api.weather.DayWeatherInfo;
+import com.karvitech.api.weather.WeatherUtils;
 import com.karvitech.apps.alarmlib.*;
 //#ifdef FREE_VERSION
 //import net.rim.blackberry.api.advertising.app10432.Banner;
@@ -39,8 +45,9 @@ import net.rimlib.blackberry.api.advertising.app.Banner;
 /**
  * 
  */
-class MusicalClockMainScreen extends MainScreen implements ConfigurationListener, RealtimeClockListener {
+class MusicalClockMainScreen extends MainScreen implements ConfigurationListener, RealtimeClockListener, LocationListener{
     private final static String STR_SHUT_DOWN_WARNING = "The alarms will not be triggered if the app is shut down. Do you want to proceed?";
+    private final static String STR_SETUP_WEATHER = "Woild like to setup weather using your current location?";
     private static final int MODE_NORMAL = 0;        // normal, just show the time
     private static final int MODE_SETTING_STYLE = 1; // setting style mode, user can set style
     
@@ -87,7 +94,7 @@ class MusicalClockMainScreen extends MainScreen implements ConfigurationListener
         {
 		    String url = "http://api.yr.no/weatherapi/locationforecast/1.8/?lat=60.10;lon=9.58";
 		    url = "com.karvitech.apps.musicalclock.MusicalClockApp";
-		    DayWeatherInfo.parseXML(url);
+		    WeatherUtils.parseXML(url);
         }
     };
         
@@ -377,7 +384,27 @@ class MusicalClockMainScreen extends MainScreen implements ConfigurationListener
         _clocks.removeAllElements();        
         return super.onClose();
     }
-            
+        
+    protected void onExposed() {
+    	Configuration config = Configuration.getInstance();
+    	Object obj = config.getKeyValue(MusicalClockContext.KEY_WEATHER_LOCATION_LAT);
+    	if(obj == null) {
+    		Application.getApplication().invokeLater(new Runnable() {
+    			public void run() {
+    				Dialog dlg = new Dialog(Dialog.D_YES_NO, STR_SETUP_WEATHER, Dialog.NO, Bitmap.getPredefinedBitmap(Bitmap.QUESTION), 0);
+    				dlg.doModal();
+    				if(dlg.getSelectedValue() == Dialog.YES) { 
+    					startWeather();
+    				}
+    			}
+    		});
+    	}
+    }
+    
+    private void   startWeather() {
+    	LocationHelper.getInstance().startLocationUpdate(this);
+    	
+    }
    /**
     * @see Screen#touchEvent(TouchEvent)
     * This implementation outputs Touch Event notifications to standard output
@@ -551,4 +578,33 @@ class MusicalClockMainScreen extends MainScreen implements ConfigurationListener
             this.refresh();
         }
     }
+
+    /**
+     * implement locationListener
+     */
+	public void locationUpdated(LocationProvider provider, Location location) {
+		// TODO Auto-generated method stub
+        if(location.isValid())
+        {
+            float heading = location.getCourse();
+            double _longitude = location.getQualifiedCoordinates().getLongitude();
+            double _latitude = location.getQualifiedCoordinates().getLatitude();
+            
+            // cancel the listener by setting it to null
+            provider.setLocationListener(null, 0, -1, -1);
+           // _locationProvider.removeProximityListener(this);
+            
+            // save the location
+            Configuration config = Configuration.getInstance();
+            config.setKeyValue(MusicalClockContext.KEY_WEATHER_LOCATION_LAT, new Float(_latitude));
+            config.setKeyValue(MusicalClockContext.KEY_WEATHER_LOCATION_LONG, new Float(_longitude));
+            config.saveSettings();
+        }
+
+	}
+	
+	public void providerStateChanged(LocationProvider provider, int newState) {
+		// TODO Auto-generated method stub
+		
+	}
 }

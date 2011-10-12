@@ -27,6 +27,8 @@ class MusicalClockContext implements RealtimeClockListener {
     public static int KEY_APP_VERSION = 4;
     public static final int KEY_FIRST_RUN_TIME = 5;
     public static final int KEY_GLOBAL_SETTINGS_2 = 6;
+    public static final int KEY_WEATHER_LOCATION_LAT = 7;
+    public static final int KEY_WEATHER_LOCATION_LONG = 8;
             
     private static MusicalClockContext _instance;
     private Vector _alarmItemList;

@@ -1,4 +1,4 @@
-package com.karvitech.apps.musicalclock;
+package com.karvitech.api.location;
 
 import java.util.Vector;
 
@@ -14,6 +14,7 @@ public class LocationHelper {
 	private static int _interval = 1;
 	
 	private LocationProvider _locationProvider;
+	private LocationListener mListener;
     private static Vector _previousPoints;
     private static float[] _altitudes;
     private static float[] _horizontalDistances;
@@ -22,15 +23,23 @@ public class LocationHelper {
     private float _wayHorizontalDistance;
     private float _horizontalDistance;
     private float _verticalDistance;
+    
+    static private LocationHelper _instance;
+    public static LocationHelper getInstance() {
+        if(_instance == null) {
+            _instance = new LocationHelper();
+        }
+        return _instance;
+    }
     /**
      * Invokes the Location API with Standalone criteria
      * 
      * @return True if the <code>LocationProvider</code> was successfully started, false otherwise
      */
-    private boolean startLocationUpdate()
+    public boolean startLocationUpdate(LocationListener listener)
     {
         boolean returnValue = false;
-
+        mListener = listener;
         if(GPSInfo.isGPSModeAvailable(GPSInfo.GPS_MODE_AUTONOMOUS))
         {
             try
@@ -48,7 +57,8 @@ public class LocationHelper {
                      * Therefore, there is no need to cache the listener
                      * instance request an update every second.
                      */
-                    _locationProvider.setLocationListener(new LocationListenerImpl(), _interval, -1, -1);
+                    //_locationProvider.setLocationListener(new LocationListenerImpl(), _interval, -1, -1);
+                    _locationProvider.setLocationListener(mListener, _interval, -1, -1);
                     returnValue = true;
                 }
                 else
@@ -57,8 +67,7 @@ public class LocationHelper {
                     {
                         public void run()
                         {
-                            Dialog.alert("Failed to obtain a location provider, exiting...");
-                            System.exit(0);
+                            Dialog.alert("Failed to access GPS");
                         }
                     });
                 }
@@ -82,8 +91,7 @@ public class LocationHelper {
             {
                 public void run()
                 {
-                    Dialog.alert("GPS autonomous/standalone mode is not supported on this device, exiting...");
-                    System.exit(0);
+                    Dialog.alert("GPS is not supported on this device");
                 }
             });
         }
@@ -108,6 +116,20 @@ public class LocationHelper {
                 float heading = location.getCourse();
                 _longitude = location.getQualifiedCoordinates().getLongitude();
                 _latitude = location.getQualifiedCoordinates().getLatitude();
+                
+                // cancel the listener by setting it to null
+                _locationProvider.setLocationListener(null, _interval, -1, -1);
+               // _locationProvider.removeProximityListener(this);
+                
+                // save the location
+               /* Configuration config = Configuration.getInstance();
+                config.setKeyValue(MusicalClockContext.KEY_WEATHER_LOCATION_LAT, new Float(_latitude));
+                config.setKeyValue(MusicalClockContext.KEY_WEATHER_LOCATION_LONG, new Float(_longitude));
+                config.saveSettings();
+                
+                MusicalClockApp.getUiApplication().invokeLater(new UpdateWeatherRunnable(_latitude,_longitude,  ));*/
+                
+                /*
                 float altitude = location.getQualifiedCoordinates().getAltitude();
                 float speed = location.getSpeed();
 
@@ -170,7 +192,7 @@ public class LocationHelper {
                 {
                     sb.append(grade + " %");
                 }
-                
+                */
             }
         }
 
