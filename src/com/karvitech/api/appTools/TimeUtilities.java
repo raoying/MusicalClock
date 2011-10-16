@@ -7,6 +7,7 @@
 
 package com.karvitech.api.appTools;
 import java.util.*;
+
 import net.rim.device.api.i18n.*;
 import net.rim.device.api.util.DateTimeUtilities;
 
@@ -259,5 +260,33 @@ public class TimeUtilities {
     	//String newStr = dateStr + " " + timeStr;
     	//Date today = df.parse(newStr);
     	
+    }
+    
+    public static String getWeekDayStr(int dayInWeek) {
+        StringBuffer dateStr = new StringBuffer();
+        switch (dayInWeek) {
+            case Calendar.MONDAY: 
+                dateStr.append("Monday");
+                break;
+            case Calendar.TUESDAY: 
+                dateStr.append("Tuesday");
+                break;
+            case Calendar.WEDNESDAY: 
+                dateStr.append("Wednesday");
+                break;
+            case Calendar.THURSDAY: 
+                dateStr.append("Thursday");
+                break;
+            case Calendar.FRIDAY: 
+                dateStr.append("Friday");
+                break;                   
+            case Calendar.SATURDAY: 
+                dateStr.append("Saturday");
+                break;
+            case Calendar.SUNDAY: 
+                dateStr.append("Sunday");
+                break;                                                                             
+        }
+        return dateStr.toString();
     }
 } 

@@ -44,6 +44,7 @@ class DigitalClockFaceField extends ClockFaceField {
     private int screenWidth = Display.getWidth();
     private int screenHeight = Display.getHeight();
     private String _deviceName = DeviceInfo.getDeviceName();
+    private int _takenHeight;
     
 //#ifdef FREE_VERSION  
     private static final String MODULE_NAME_SUFIX_SUPER = "SuperFree";
@@ -154,6 +155,9 @@ class DigitalClockFaceField extends ClockFaceField {
          
     }
     
+    public void setTakenHeight(int height) {
+    	_takenHeight = height;
+    }
     static void loadImages(int color) {
         _color = color;
         //for test only
@@ -450,11 +454,12 @@ class DigitalClockFaceField extends ClockFaceField {
         return Display.getWidth();
     }
     public int getPreferredHeight() {
-//#ifdef FREE_VERSION
+    	return Display.getHeight() - _takenHeight;
+/*//#ifdef FREE_VERSION
         return  Display.getHeight() - AD_HEIGHT; // minus the ad height
-//#else        
+////#else        
         return Display.getHeight();
-//#endif        
+////#endif        */
     } 
     protected void layout(int width, int height) {
         setExtent(getPreferredWidth(),getPreferredHeight()); 

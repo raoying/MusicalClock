@@ -57,6 +57,12 @@ class MusicalClockMainScreen extends MainScreen
     private final static String STR_SETUP_WEATHER = "Woild like to setup weather using your current location?";
     private static final int MODE_NORMAL = 0;        // normal, just show the time
     private static final int MODE_SETTING_STYLE = 1; // setting style mode, user can set style
+
+//#ifdef FREE_VERSION
+    public static final int AD_HEIGHT = 53;
+//#else
+    public static final int AD_HEIGHT = 0;
+//#endif
     
     private static int AD_PACEMENT_ID = 34898;
     private static String INNER_ACTIVE_AD_ID = "KarviTech_MusicalClock_BB";
@@ -340,6 +346,13 @@ class MusicalClockMainScreen extends MainScreen
         MusicalClockGlobalSettingItem2 globalSettings2 = (MusicalClockGlobalSettingItem2)Configuration.getInstance().getKeyValue(MusicalClockContext.KEY_GLOBAL_SETTINGS_2);     
         MusicalClockSettingItem item = new MusicalClockSettingItem(Calendar.getInstance().getTimeZone());        
         _clockField = new DigitalClockFaceField(item, globalSettings2.isMilitaryTime(), DigitalClockFaceField.PINK_COLOR);
+        
+        int bannersHeight = AD_HEIGHT;
+        if(_weatherBanner != null) {
+        	bannersHeight += _weatherBanner.getContentHeight();
+        }
+        _clockField.setTakenHeight(bannersHeight);
+        
         DigitalClockFaceField.loadImages(_style);         
         _clockField.setBackGroundType(this._bkgroundType); 
         Vector alarmList = (Vector)Configuration.getInstance().getKeyValue(MusicalClockContext.KEY_ALARM_LIST); 

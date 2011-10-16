@@ -50,6 +50,7 @@ public class DayWeatherInfo {
 	Vector pointWeatherInfo = new Vector(POINT_NUM);
 	
 	String dateStr; // in utc
+	String dayInWeekStr;
 	String tempUnit; // C or F
 	private float _highTemp = Float.MIN_VALUE;
 	private float _lowTemp = Float.MAX_VALUE;

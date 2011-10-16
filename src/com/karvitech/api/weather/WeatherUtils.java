@@ -1,6 +1,7 @@
 package com.karvitech.api.weather;
 
 import java.io.InputStream;
+import java.util.Calendar;
 import java.util.Date;
 import java.util.TimeZone;
 import java.util.Vector;
@@ -66,6 +67,12 @@ public class WeatherUtils {
 					forecasts.addElement(dayWeatherInfo);
 					startTimeOfDay = sectionStartTime;
 					dayWeatherInfo.dateStr = startTimeOfDay;
+					
+					Date dayStartTime = TimeUtilities.stringToDate(startTimeOfDay);
+					Calendar cal = Calendar.getInstance();
+					cal.setTime(dayStartTime);
+					int dayOfWeek = cal.get(Calendar.DAY_OF_WEEK);
+					dayWeatherInfo.dayInWeekStr = TimeUtilities.getWeekDayStr(dayOfWeek).substring(0, 3);
 				}
 				else if(sectionStartTime.equalsIgnoreCase(endTime) && isANewDay(sectionStartTime,startTimeOfDay )) {
 					// only check if it is a new day for point data, period data in the beginning of
@@ -76,6 +83,12 @@ public class WeatherUtils {
 					dayWeatherInfo =  new DayWeatherInfo();
 					startTimeOfDay = sectionStartTime;
 					dayWeatherInfo.dateStr = startTimeOfDay;
+					
+					Date dayStartTime = TimeUtilities.stringToDate(startTimeOfDay);
+					Calendar cal = Calendar.getInstance();
+					cal.setTime(dayStartTime);
+					int dayOfWeek = cal.get(Calendar.DAY_OF_WEEK);
+					dayWeatherInfo.dayInWeekStr = TimeUtilities.getWeekDayStr(dayOfWeek).substring(0, 3);
 											
 				}
 				// the node sequence is one time element that is the info for a time point

@@ -1,5 +1,7 @@
 package com.karvitech.api.weather;
 
+import com.karvitech.api.appTools.Util;
+
 import net.rim.device.api.system.Bitmap;
 import net.rim.device.api.system.Display;
 import net.rim.device.api.ui.Color;
@@ -12,6 +14,7 @@ public class WeatherTileField extends Field {
     private int _preferedHeight;
     private int _preferedWidth;
     private Bitmap _symbolImage; 
+    private Bitmap _scaledSymbolImage; 
     private float _highTemp;
     private float _lowTemp;
     private int _symbolId;
@@ -30,6 +33,7 @@ public class WeatherTileField extends Field {
     	_highTemp = dayInfo.getHighTemp();
     	_lowTemp = dayInfo.getLowTemp();
     	_symbolImage = this.getSymbolImage(dayInfo.getCurrentSymbol());
+    	this.configSize();
     }
     public void setTemp(float high, float low) {
     	_highTemp = high;
@@ -51,48 +55,62 @@ public class WeatherTileField extends Field {
     }
     
     public int getPreferredHeight(){
-    	_preferedHeight = Display.getWidth()/5;
-    	return _preferedHeight;
+    	Font font = getFont().derive(Font.PLAIN,_titleFontSize);  
+    	int fontHeight = font.getHeight();
+    	if(_symbolImage != null) {
+        	_preferedHeight = fontHeight*2 + _symbolImage.getHeight();
+        	return _preferedHeight;  		
+    	}
+    	else 
+    		return Display.getHeight()/5;
     }	
 
     public void configSize() {
         if(Display.getHeight()*Display.getWidth() >= 320*480) {
-            _titleFontSize = 22;
+            _titleFontSize = 18;
             _detailsFontSize = 18;
             _detailsYOffset = 28;
         }
         else {
-            _titleFontSize = 18;
+            _titleFontSize = 15;
             _detailsFontSize = 15;
             _detailsYOffset = 21;        
         }
+        
+        if(_orientation != Display.getOrientation()) {
+        	
+        }
+        
     }
 	protected void paint(Graphics graphics) {
 		if(_orientation != Display.getOrientation()) {
 			configSize();
 			_orientation = Display.getOrientation();
 		}
-		
+		//graphics.drawText
+		// draw temp and unit
+        Font oldFont = this.getFont();
+        Font font = oldFont.derive(Font.PLAIN,_titleFontSize);        
+        int fontHeight = font.getHeight();
+        
+        
 		// TODO Auto-generated method stub
-		int xOffset = 0;
-		int yOffset = 0;
+        int imgWidth = _symbolImage.getWidth();
+		int imgHeight = _symbolImage.getHeight();
+		
+        int xOffset = (this.getPreferredWidth() - imgWidth) >> 1;
+		int yOffset = fontHeight; // no need for spacing because the image itself has it
 		
         int color = Color.BLACK;
         graphics.setBackgroundColor(color);
         graphics.clear();
         
-        
+		
         // draw image
 		if(_symbolImage!=null) {
-			int imgWidth = _symbolImage.getWidth();
-			int imgHeight = _symbolImage.getHeight();
-			graphics.drawBitmap(xOffset, yOffset, imgWidth/2, imgHeight/2, _symbolImage, 0, 0);
+			graphics.drawBitmap(xOffset, yOffset, imgWidth, imgHeight, _symbolImage, 0, 0);
 		}
-		//graphics.drawText
-		// draw temp and unit
-        Font oldFont = this.getFont();
-        Font font = oldFont.derive(Font.BOLD,_titleFontSize);        
-        
+
         //this.setFont(font);
         graphics.setFont(font);
         String text = (int)_lowTemp + "/" + (int)_highTemp;
@@ -102,9 +120,14 @@ public class WeatherTileField extends Field {
             	graphics.setColor(Color.WHITE);
             } else {
             	graphics.setColor(Color.WHITE);
-            }        
+            }
+            
+           // String dayStr = "Fri";
+            int textXOffset = (this.getPreferredWidth() - font.getAdvance(_dayInfo.dayInWeekStr)) >> 1;
+            graphics.drawText(_dayInfo.dayInWeekStr, textXOffset,2,0,this.getWidth());
             //int yOffset = (_details != null)?2:12;
-            graphics.drawText(text, 0, getHeight() - 12,0,this.getWidth());
+            textXOffset = (this.getPreferredWidth() - font.getAdvance(text)) >> 1;
+            graphics.drawText(text, textXOffset, fontHeight + imgHeight,0,this.getWidth());
         }
         this.setFont(oldFont);
         graphics.setFont(oldFont);
@@ -112,7 +135,7 @@ public class WeatherTileField extends Field {
 	
 	private Bitmap getSymbolImage(int symbolId) {
 		String fileName = symbolId + ".png";
-		fileName = "01n.png";
+		fileName = "01n_low.png";
 		return Bitmap.getBitmapResource(fileName);
 	}
 
