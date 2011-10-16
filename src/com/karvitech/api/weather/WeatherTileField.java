@@ -2,7 +2,10 @@ package com.karvitech.api.weather;
 
 import net.rim.device.api.system.Bitmap;
 import net.rim.device.api.system.Display;
+import net.rim.device.api.ui.Color;
 import net.rim.device.api.ui.Field;
+import net.rim.device.api.ui.Font;
+import net.rim.device.api.ui.FontFamily;
 import net.rim.device.api.ui.Graphics;
 
 public class WeatherTileField extends Field {
@@ -14,6 +17,23 @@ public class WeatherTileField extends Field {
     private int _symbolId;
     private char _unit;
     private DayWeatherInfo _dayInfo;
+    
+    private static int _titleFontSize;
+    private static int _detailsFontSize;
+    private static int _detailsYOffset;
+    
+    static {
+        if(Display.getHeight()*Display.getWidth() >= 320*480) {
+            _titleFontSize = 22;
+            _detailsFontSize = 18;
+            _detailsYOffset = 28;
+        }
+        else {
+            _titleFontSize = 18;
+            _detailsFontSize = 15;
+            _detailsYOffset = 21;        
+        }
+    }
     
     public void updateWeather(DayWeatherInfo dayInfo) {
     	_dayInfo = dayInfo;
@@ -49,6 +69,13 @@ public class WeatherTileField extends Field {
 		// TODO Auto-generated method stub
 		int xOffset = 0;
 		int yOffset = 0;
+		
+        int color = Color.BLACK;
+        graphics.setBackgroundColor(color);
+        graphics.clear();
+        
+        
+        // draw image
 		if(_symbolImage!=null) {
 			int imgWidth = _symbolImage.getWidth();
 			int imgHeight = _symbolImage.getHeight();
@@ -56,7 +83,24 @@ public class WeatherTileField extends Field {
 		}
 		//graphics.drawText
 		// draw temp and unit
-		
+        Font oldFont = this.getFont();
+        Font font = oldFont.derive(Font.BOLD,_titleFontSize);        
+        
+        //this.setFont(font);
+        graphics.setFont(font);
+        String text = (int)_lowTemp + "/" + (int)_highTemp;
+        if(text != null) {
+            // for title, color is black if unfocused
+            if(this.isFocus()) {
+            	graphics.setColor(Color.WHITE);
+            } else {
+            	graphics.setColor(Color.WHITE);
+            }        
+            //int yOffset = (_details != null)?2:12;
+            graphics.drawText(text, 0, getHeight() - 12,0,this.getWidth());
+        }
+        this.setFont(oldFont);
+        graphics.setFont(oldFont);
 	}
 	
 	private Bitmap getSymbolImage(int symbolId) {
