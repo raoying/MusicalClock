@@ -62,25 +62,13 @@ public class WeatherUtils {
 				// create the day weather info object if needed,
 				// either when the parsing just started, or encouters a time section 
 				// that is not in the current date.
-				if(startTimeOfDay == null) {
-					dayWeatherInfo =  new DayWeatherInfo();
-					forecasts.addElement(dayWeatherInfo);
-					startTimeOfDay = sectionStartTime;
-					dayWeatherInfo.dateStr = startTimeOfDay;
-					
-					Date dayStartTime = TimeUtilities.stringToDate(startTimeOfDay);
-					Calendar cal = Calendar.getInstance();
-					cal.setTime(dayStartTime);
-					int dayOfWeek = cal.get(Calendar.DAY_OF_WEEK);
-					dayWeatherInfo.dayInWeekStr = TimeUtilities.getWeekDayStr(dayOfWeek).substring(0, 3);
-				}
-				else if(sectionStartTime.equalsIgnoreCase(endTime) && isANewDay(sectionStartTime,startTimeOfDay )) {
+				if(startTimeOfDay == null || (sectionStartTime.equalsIgnoreCase(endTime) && isANewDay(sectionStartTime,startTimeOfDay ))) {
 					// only check if it is a new day for point data, period data in the beginning of
 					// new day has 6 hours of data from last day
 					// starting a new day, add the current data into the vector and create a new 
 					// object for the new day
-					forecasts.addElement(dayWeatherInfo);
 					dayWeatherInfo =  new DayWeatherInfo();
+					forecasts.addElement(dayWeatherInfo);
 					startTimeOfDay = sectionStartTime;
 					dayWeatherInfo.dateStr = startTimeOfDay;
 					
@@ -91,6 +79,7 @@ public class WeatherUtils {
 					dayWeatherInfo.dayInWeekStr = TimeUtilities.getWeekDayStr(dayOfWeek).substring(0, 3);
 											
 				}
+				
 				// the node sequence is one time element that is the info for a time point
 				// followed by 2 time elements for span of 3 and 6 hours, then repeate 
 				if(sectionStartTime.equalsIgnoreCase(endTime)) {
