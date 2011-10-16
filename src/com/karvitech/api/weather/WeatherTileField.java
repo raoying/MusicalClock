@@ -17,25 +17,15 @@ public class WeatherTileField extends Field {
     private int _symbolId;
     private char _unit;
     private DayWeatherInfo _dayInfo;
+    private static int _orientation;
     
     private static int _titleFontSize;
     private static int _detailsFontSize;
     private static int _detailsYOffset;
     
-    static {
-        if(Display.getHeight()*Display.getWidth() >= 320*480) {
-            _titleFontSize = 22;
-            _detailsFontSize = 18;
-            _detailsYOffset = 28;
-        }
-        else {
-            _titleFontSize = 18;
-            _detailsFontSize = 15;
-            _detailsYOffset = 21;        
-        }
-    }
     
     public void updateWeather(DayWeatherInfo dayInfo) {
+    	_orientation = Display.getOrientation();
     	_dayInfo = dayInfo;
     	_highTemp = dayInfo.getHighTemp();
     	_lowTemp = dayInfo.getLowTemp();
@@ -65,7 +55,24 @@ public class WeatherTileField extends Field {
     	return _preferedHeight;
     }	
 
+    public void configSize() {
+        if(Display.getHeight()*Display.getWidth() >= 320*480) {
+            _titleFontSize = 22;
+            _detailsFontSize = 18;
+            _detailsYOffset = 28;
+        }
+        else {
+            _titleFontSize = 18;
+            _detailsFontSize = 15;
+            _detailsYOffset = 21;        
+        }
+    }
 	protected void paint(Graphics graphics) {
+		if(_orientation != Display.getOrientation()) {
+			configSize();
+			_orientation = Display.getOrientation();
+		}
+		
 		// TODO Auto-generated method stub
 		int xOffset = 0;
 		int yOffset = 0;
@@ -79,7 +86,7 @@ public class WeatherTileField extends Field {
 		if(_symbolImage!=null) {
 			int imgWidth = _symbolImage.getWidth();
 			int imgHeight = _symbolImage.getHeight();
-			graphics.drawBitmap(xOffset, yOffset, imgWidth, imgHeight, _symbolImage, 0, 0);
+			graphics.drawBitmap(xOffset, yOffset, imgWidth/2, imgHeight/2, _symbolImage, 0, 0);
 		}
 		//graphics.drawText
 		// draw temp and unit

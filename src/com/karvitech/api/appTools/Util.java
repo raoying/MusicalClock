@@ -9,6 +9,8 @@ package com.karvitech.api.appTools;
 import java.util.*;
 import java.io.*;
 import javax.microedition.content.*;
+
+import net.rim.device.api.math.Fixed32;
 import net.rim.device.api.system.*; 
 /**
  * 
@@ -358,5 +360,28 @@ public final class Util {
     		iCounter += 1;		
     	}            
     	return strArray;	
+    }
+    
+    public static Bitmap getScaledBitmapImage(String imagename, double scaleX, double scaleY)
+    {
+        
+        EncodedImage image = EncodedImage.getEncodedImageResource(imagename); 
+        
+        int currentWidthFixed32 = Fixed32.toFP(image.getWidth());
+        int currentHeightFixed32 = Fixed32.toFP(image.getHeight());
+        
+        int width =(int)(image.getWidth() * scaleX);
+        int height = (int)(image.getHeight() * scaleY);
+        
+        
+        int requiredWidthFixed32 = Fixed32.toFP(width);
+        int requiredHeightFixed32 = Fixed32.toFP(height);
+        
+        int scaleXFixed32 = Fixed32.div(currentWidthFixed32, requiredWidthFixed32);
+        int scaleYFixed32 = Fixed32.div(currentHeightFixed32, requiredHeightFixed32);
+        
+        image = image.scaleImage32(scaleXFixed32, scaleYFixed32);
+        
+        return image.getBitmap();
     }
 } 
