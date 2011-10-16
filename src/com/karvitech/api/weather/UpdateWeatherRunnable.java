@@ -6,7 +6,7 @@ public class UpdateWeatherRunnable implements Runnable{
 	private String mUrl;
 	private WeatherInfoListener mListener;
 	
-	public UpdateWeatherRunnable(float lat, float longi, WeatherInfoListener listener) {
+	public UpdateWeatherRunnable(double lat, double longi, WeatherInfoListener listener) {
 		mUrl = WeatherUtils.YR_NO_FORECAST_URL + "lat=" + lat + ";lon=" + longi;
 		mListener = listener;
 	}

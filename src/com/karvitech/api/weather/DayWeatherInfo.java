@@ -51,7 +51,34 @@ public class DayWeatherInfo {
 	
 	String dateStr; // in utc
 	String tempUnit; // C or F
+	private float _highTemp = Float.MIN_VALUE;
+	private float _lowTemp = Float.MAX_VALUE;
 
+	public float getHighTemp() {
+		
+		for(int i=0;i<pointWeatherInfo.size();i++) {
+			PointWeatherInfo pointData = (PointWeatherInfo)pointWeatherInfo.elementAt(i); 
+			if(_highTemp < pointData.temprature) {
+				_highTemp = pointData.temprature;
+			}
+		}
+		return _highTemp;
+	}
+	
+	public float getLowTemp() {
+		for(int i=0;i<pointWeatherInfo.size();i++) {
+			PointWeatherInfo pointData = (PointWeatherInfo)pointWeatherInfo.elementAt(i); 
+			if(_lowTemp > pointData.temprature) {
+				_lowTemp = pointData.temprature;
+			}
+		}
+		return _lowTemp;	
+	}
+
+	public int getCurrentSymbol() {
+		PeriodWeatherInfo periodInfo = (PeriodWeatherInfo)periodWeatherInfo.elementAt(0);
+		return periodInfo.symbolId;
+	}
 	public void clear() {
 		periodWeatherInfo.removeAllElements();
 	}
@@ -65,6 +92,7 @@ public class DayWeatherInfo {
 		//return periodWeatherInfo.add(info);
 		periodWeatherInfo.addElement(info);
 	}
+
 	public static class PeriodWeatherInfo  {
 		public String startTime;
 		public int timeSpan; // 3 or 6 hours

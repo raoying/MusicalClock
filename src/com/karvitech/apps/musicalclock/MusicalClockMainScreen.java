@@ -33,6 +33,9 @@ import net.rim.device.api.system.*;
 import com.karvitech.api.appTools.*;
 import com.karvitech.api.location.LocationHelper;
 import com.karvitech.api.weather.DayWeatherInfo;
+import com.karvitech.api.weather.UpdateWeatherRunnable;
+import com.karvitech.api.weather.WeatherBanner;
+import com.karvitech.api.weather.WeatherInfoListener;
 import com.karvitech.api.weather.WeatherUtils;
 import com.karvitech.apps.alarmlib.*;
 //#ifdef FREE_VERSION
@@ -45,7 +48,11 @@ import net.rimlib.blackberry.api.advertising.app.Banner;
 /**
  * 
  */
-class MusicalClockMainScreen extends MainScreen implements ConfigurationListener, RealtimeClockListener, LocationListener{
+class MusicalClockMainScreen extends MainScreen 
+							 implements ConfigurationListener, 
+										RealtimeClockListener, 
+										LocationListener,
+										WeatherInfoListener {
     private final static String STR_SHUT_DOWN_WARNING = "The alarms will not be triggered if the app is shut down. Do you want to proceed?";
     private final static String STR_SETUP_WEATHER = "Woild like to setup weather using your current location?";
     private static final int MODE_NORMAL = 0;        // normal, just show the time
@@ -68,6 +75,9 @@ class MusicalClockMainScreen extends MainScreen implements ConfigurationListener
     
     private VerticalFieldManager _vfm;
     private VerticalFieldManager _container; // the vfm with clock field in it
+    private WeatherBanner _weatherBanner;
+    private Vector _weatherInfoList;
+    
     DigitalClockFaceField _clockField;
 //#ifdef FREE_VERSION        
     Banner _bannerAd;
@@ -94,7 +104,8 @@ class MusicalClockMainScreen extends MainScreen implements ConfigurationListener
         {
 		    String url = "http://api.yr.no/weatherapi/locationforecast/1.8/?lat=60.10;lon=9.58";
 		    url = "com.karvitech.apps.musicalclock.MusicalClockApp";
-		    WeatherUtils.parseXML(url);
+		    _weatherInfoList = WeatherUtils.parseXML(url);
+		    refreshWeather();
         }
     };
         
@@ -564,6 +575,17 @@ class MusicalClockMainScreen extends MainScreen implements ConfigurationListener
                           
         // super.sublayout(Display.getWidth(), Display.getHeight());
     }        
+
+    private void refreshWeather() {
+		if(_weatherBanner == null) {
+			_weatherBanner = new WeatherBanner();
+			//_vfm.add(_weatherBanner);
+			this.insert(_weatherBanner, 0);
+		}
+		_weatherBanner.updateWeather(_weatherInfoList);	
+		this.invalidate();
+    }
+    
     // implements the listener
     public void configurationChanged() {
         this.refreshClock();
@@ -599,6 +621,9 @@ class MusicalClockMainScreen extends MainScreen implements ConfigurationListener
             config.setKeyValue(MusicalClockContext.KEY_WEATHER_LOCATION_LAT, new Float(_latitude));
             config.setKeyValue(MusicalClockContext.KEY_WEATHER_LOCATION_LONG, new Float(_longitude));
             config.saveSettings();
+            
+            // start updating the weather
+            new Thread(new UpdateWeatherRunnable(_latitude,_longitude,this)).start();
         }
 
 	}
@@ -606,5 +631,16 @@ class MusicalClockMainScreen extends MainScreen implements ConfigurationListener
 	public void providerStateChanged(LocationProvider provider, int newState) {
 		// TODO Auto-generated method stub
 		
+	}
+
+	/**
+	 * Implementing WeatherInfoListener
+	 */
+	public void WeatherInfoChanged(Vector weatherInfo) {
+		// TODO Auto-generated method stub
+		if(weatherInfo != null) {
+			_weatherInfoList = weatherInfo;
+			refreshWeather();
+		}
 	}
 }

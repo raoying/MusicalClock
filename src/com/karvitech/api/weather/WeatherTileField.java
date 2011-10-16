@@ -5,7 +5,7 @@ import net.rim.device.api.system.Display;
 import net.rim.device.api.ui.Field;
 import net.rim.device.api.ui.Graphics;
 
-public class WaetherTitleField extends Field {
+public class WeatherTileField extends Field {
     private int _preferedHeight;
     private int _preferedWidth;
     private Bitmap _symbolImage; 
@@ -13,7 +13,14 @@ public class WaetherTitleField extends Field {
     private float _lowTemp;
     private int _symbolId;
     private char _unit;
+    private DayWeatherInfo _dayInfo;
     
+    public void updateWeather(DayWeatherInfo dayInfo) {
+    	_dayInfo = dayInfo;
+    	_highTemp = dayInfo.getHighTemp();
+    	_lowTemp = dayInfo.getLowTemp();
+    	_symbolImage = this.getSymbolImage(dayInfo.getCurrentSymbol());
+    }
     public void setTemp(float high, float low) {
     	_highTemp = high;
     	_lowTemp = low;
@@ -42,16 +49,19 @@ public class WaetherTitleField extends Field {
 		// TODO Auto-generated method stub
 		int xOffset = 0;
 		int yOffset = 0;
-		int imgWidth = _symbolImage.getWidth();
-		int imgHeight = _symbolImage.getHeight();
-		graphics.drawBitmap(xOffset, yOffset, imgWidth, imgHeight, _symbolImage, 0, 0);
-		
+		if(_symbolImage!=null) {
+			int imgWidth = _symbolImage.getWidth();
+			int imgHeight = _symbolImage.getHeight();
+			graphics.drawBitmap(xOffset, yOffset, imgWidth, imgHeight, _symbolImage, 0, 0);
+		}
+		//graphics.drawText
 		// draw temp and unit
-
+		
 	}
 	
 	private Bitmap getSymbolImage(int symbolId) {
 		String fileName = symbolId + ".png";
+		fileName = "01n.png";
 		return Bitmap.getBitmapResource(fileName);
 	}
 
