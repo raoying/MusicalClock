@@ -54,7 +54,7 @@ class MusicalClockMainScreen extends MainScreen
 										LocationListener,
 										WeatherInfoListener {
     private final static String STR_SHUT_DOWN_WARNING = "The alarms will not be triggered if the app is shut down. Do you want to proceed?";
-    private final static String STR_SETUP_WEATHER = "Woild like to setup weather using your current location?";
+    private final static String STR_SETUP_WEATHER = "Would you like to setup weather using your current location?";
     private static final int MODE_NORMAL = 0;        // normal, just show the time
     private static final int MODE_SETTING_STYLE = 1; // setting style mode, user can set style
 
@@ -420,9 +420,11 @@ class MusicalClockMainScreen extends MainScreen
     				if(dlg.getSelectedValue() == Dialog.YES) { 
     					startWeather();
     				}
+    				dlg.close();
     			}
     		});
     	}
+    	super.onExposed();
     }
     
     private void   startWeather() {

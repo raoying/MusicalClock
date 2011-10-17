@@ -113,7 +113,7 @@ public class WeatherTileField extends Field {
 
         //this.setFont(font);
         graphics.setFont(font);
-        String text = (int)_lowTemp + "/" + (int)_highTemp;
+        String text = (int)_lowTemp + "\u00b0/" + (int)_highTemp + '\u00b0';
         if(text != null) {
             // for title, color is black if unfocused
             if(this.isFocus()) {
@@ -134,8 +134,18 @@ public class WeatherTileField extends Field {
 	}
 	
 	private Bitmap getSymbolImage(int symbolId) {
-		String fileName = symbolId + ".png";
-		fileName = "01n_low.png";
+		StringBuffer strBuf = new StringBuffer();
+		if(symbolId < 10) {
+			strBuf.append('0');
+		}
+		strBuf.append(symbolId);
+		if((symbolId >= 1 && symbolId <= 3) ||(symbolId >= 5 && symbolId <= 8)) {
+			strBuf.append('d');
+		}
+		strBuf.append("_low");
+		strBuf.append(".png");
+		String fileName = strBuf.toString();
+		//fileName = "01n_low.png";
 		return Bitmap.getBitmapResource(fileName);
 	}
 
