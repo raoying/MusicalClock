@@ -11,12 +11,15 @@ package com.karvitech.apps.musicalclock;
 
 
 import java.util.*;
+
+
 import net.rim.device.api.ui.UiApplication;
 import com.karvitech.api.appTools.*;
 import com.karvitech.api.weather.UpdateWeatherRunnable;
 
 import net.rim.device.api.system.*;
 import net.rim.device.api.util.*;
+
 import com.karvitech.apps.alarmlib.*;
 /**
  * 
@@ -37,7 +40,9 @@ class MusicalClockContext implements RealtimeClockListener {
     public static final int KEY_WEATHER_LOCATION_LAT = 7;
     public static final int KEY_WEATHER_LOCATION_LONG = 8;
     public static final int KEY_WEATHER_DISABLED = 9;
+    public static final int KEY_WEATHER_USE_CELSIUS = 10;
     
+    private static int TRIAL_DAYS = 7;
     private static MusicalClockContext _instance;
     private Vector _alarmItemList;
     private int _minutesPassed;
@@ -53,6 +58,21 @@ class MusicalClockContext implements RealtimeClockListener {
         _alarmItemList = (Vector)Configuration.getInstance().getKeyValue(MusicalClockContext.KEY_ALARM_LIST);
     }
     
+    public static boolean isTrialExpired() {
+        Long firstRunTime = (Long)Configuration.getInstance().getKeyValue(KEY_FIRST_RUN_TIME);
+        // first run time
+        if(firstRunTime == null) {
+        	firstRunTime = new Long(System.currentTimeMillis());
+            Configuration.getInstance().setKeyValue(MusicalClockContext.KEY_FIRST_RUN_TIME, firstRunTime); 
+        }  
+        long runTime = System.currentTimeMillis() - firstRunTime.longValue();
+        if(runTime >= DateTimeUtilities.ONEDAY*TRIAL_DAYS)  {
+            return true;
+        }
+        else {
+            return false;
+        }        
+    }
     Vector getAlarmItemList() {
         return _alarmItemList;
     }

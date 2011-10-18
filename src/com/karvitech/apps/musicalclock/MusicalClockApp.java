@@ -142,6 +142,18 @@ public final class MusicalClockApp extends UiApplication implements SystemListen
             config.setKeyValue(MusicalClockContext.KEY_ALARM_LIST, clocks);
         }
         
+        // first run time
+        if(config.getKeyValue(MusicalClockContext.KEY_FIRST_RUN_TIME) == null) {
+            Long firstRunTime = new Long(System.currentTimeMillis());
+            config.setKeyValue(MusicalClockContext.KEY_FIRST_RUN_TIME, firstRunTime); 
+        }  
+        
+        // temperature unit
+        if(config.getKeyValue(MusicalClockContext.KEY_WEATHER_USE_CELSIUS) == null) {
+        	// yr.no uses Celsius
+            Boolean useCelsius = new Boolean(true);
+            config.setKeyValue(MusicalClockContext.KEY_WEATHER_USE_CELSIUS, useCelsius); 
+        }  
         // save the initial settings
         config.saveSettings();
     } 
