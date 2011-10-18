@@ -1,5 +1,7 @@
 package com.karvitech.api.weather;
 
+import java.util.Calendar;
+
 import com.karvitech.api.appTools.Util;
 
 import net.rim.device.api.system.Bitmap;
@@ -25,6 +27,7 @@ public class WeatherTileField extends Field {
     private static int _titleFontSize;
     private static int _detailsFontSize;
     private static int _detailsYOffset;
+    public static boolean Fahrenheit;
     
     
     public void updateWeather(DayWeatherInfo dayInfo) {
@@ -113,7 +116,13 @@ public class WeatherTileField extends Field {
 
         //this.setFont(font);
         graphics.setFont(font);
-        String text = (int)_lowTemp + "\u00b0/" + (int)_highTemp + '\u00b0';
+        String text = null;
+        if(Fahrenheit) {
+        	text = (int)(_lowTemp*9/5+32) + "\u00b0/" + (int)(_highTemp*9/5 + 32) + '\u00b0';
+        }
+        else {
+        	text = (int)_lowTemp + "\u00b0/" + (int)_highTemp + '\u00b0';
+        }
         if(text != null) {
             // for title, color is black if unfocused
             if(this.isFocus()) {
@@ -140,7 +149,14 @@ public class WeatherTileField extends Field {
 		}
 		strBuf.append(symbolId);
 		if((symbolId >= 1 && symbolId <= 3) ||(symbolId >= 5 && symbolId <= 8)) {
-			strBuf.append('d');
+			Calendar cal = Calendar.getInstance();
+			int hour = cal.get(Calendar.HOUR_OF_DAY);
+			if(hour > 6 && hour < 18) {
+				strBuf.append('d');
+			}
+			else {
+				strBuf.append('n');
+			}
 		}
 		strBuf.append("_low");
 		strBuf.append(".png");

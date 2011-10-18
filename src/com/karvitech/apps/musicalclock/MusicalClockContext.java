@@ -13,6 +13,8 @@ package com.karvitech.apps.musicalclock;
 import java.util.*;
 import net.rim.device.api.ui.UiApplication;
 import com.karvitech.api.appTools.*;
+import com.karvitech.api.weather.UpdateWeatherRunnable;
+
 import net.rim.device.api.system.*;
 import net.rim.device.api.util.*;
 import com.karvitech.apps.alarmlib.*;
@@ -20,6 +22,11 @@ import com.karvitech.apps.alarmlib.*;
  * 
  */
 class MusicalClockContext implements RealtimeClockListener {
+//#ifdef FREE_VERSION  
+	public static final boolean free_version = true;
+//#else
+	public static final boolean free_version = false;
+//#endif	
     // configuration keys    
     public static int KEY_TERM_ACCEPTED = 1;
     public static int KEY_GLOBAL_SETTINGS = 2;
@@ -29,9 +36,11 @@ class MusicalClockContext implements RealtimeClockListener {
     public static final int KEY_GLOBAL_SETTINGS_2 = 6;
     public static final int KEY_WEATHER_LOCATION_LAT = 7;
     public static final int KEY_WEATHER_LOCATION_LONG = 8;
-            
+    public static final int KEY_WEATHER_DISABLED = 9;
+    
     private static MusicalClockContext _instance;
     private Vector _alarmItemList;
+    private int _minutesPassed;
     
     public static MusicalClockContext getInstance() {
         if(_instance == null) {
@@ -54,7 +63,19 @@ class MusicalClockContext implements RealtimeClockListener {
     public void clockUpdated() 
     {      
         checkAlarms();
+        checkWeather();
     } 
+    private void checkWeather() {
+    	_minutesPassed += 1;
+    	if(_minutesPassed >= 300) {
+    		_minutesPassed = 0;
+    		Configuration config = Configuration.getInstance();
+    		
+            double longitude = ((Float)config.getKeyValue(KEY_WEATHER_LOCATION_LAT)).doubleValue();
+            double latitude = ((Float)config.getKeyValue(KEY_WEATHER_LOCATION_LONG)).doubleValue();;
+            new Thread(new UpdateWeatherRunnable(latitude,longitude,MusicalClockMainScreen.getInstance())).start();
+    	}
+    }
     
     private void checkAlarms() {
         for(int i=0; i < _alarmItemList.size();i++) {

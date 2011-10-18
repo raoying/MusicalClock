@@ -16,6 +16,7 @@ import net.rim.device.api.system.DeviceInfo;
 
 public class AboutScreen extends MainScreen {
     static final String STR_ABOUT = "© Karvi Technologies, Inc.";
+    static final String STR_CREDITS = "The weather data and symbols are provided by yr.no";
     static final String STR_TIP_1 = "If there are multiple folders of music files, you can select the parent folder, the app will search recursively in the sub-folders.";
     static final String STR_TIP_2 = "The preloaded ringtones and songs on BB may not be accessible to 3rd party apps, please use your own music files and use the Test button to check if they work.";
     static AboutScreen _instance;
@@ -74,7 +75,10 @@ public class AboutScreen extends MainScreen {
                 return true;
             }            
         }); 
-        
+        // Credits
+        vfm.add(new SeparatorField());
+        addTip(vfm, "Credits:", STR_CREDITS);
+        vfm.add(new SeparatorField());      
         // tip 1
         vfm.add(new SeparatorField());
         addTip(vfm, "Tip 1:", STR_TIP_1);

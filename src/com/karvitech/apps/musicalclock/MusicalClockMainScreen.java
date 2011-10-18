@@ -97,7 +97,7 @@ class MusicalClockMainScreen extends MainScreen
             AlarmListScreen.showScreen();
         }
     };    
-    private MenuItem _aboutMenuItem = new MenuItem("Support", 100, 10)
+    private MenuItem _aboutMenuItem = new MenuItem("About", 100, 10)
     {
         public void run()
         {
@@ -367,8 +367,8 @@ class MusicalClockMainScreen extends MainScreen
             }
         }
         _clockField.setAlarmOn(hasAlarm);
-        _container.add(_clockField);
-
+        //_container.add(_clockField);
+        _container.insert(_clockField, 0);
         
     }
     
@@ -376,6 +376,7 @@ class MusicalClockMainScreen extends MainScreen
     {
         menu.deleteAll();
         menu.add(_onlineHelp);
+        menu.add(_aboutMenuItem);
         menu.addSeparator();
         menu.add(_alarmsMenuItem);
        // menu.add(_timeFormatMenuItem);
@@ -391,7 +392,6 @@ class MusicalClockMainScreen extends MainScreen
         menu.add(_shutDownMenuItem);
         menu.add(_weatherMenuItem);
         menu.addSeparator();
-        menu.add(_aboutMenuItem);
         if(Configuration.isFreeVersion()) {
              menu.addSeparator();
              menu.add(_upgradeMenuItem);
@@ -410,9 +410,10 @@ class MusicalClockMainScreen extends MainScreen
     }
         
     protected void onExposed() {
-    	Configuration config = Configuration.getInstance();
+    	final Configuration config = Configuration.getInstance();
     	Object obj = config.getKeyValue(MusicalClockContext.KEY_WEATHER_LOCATION_LAT);
-    	if(obj == null) {
+    	Object weatherDisabled = config.getKeyValue(MusicalClockContext.KEY_WEATHER_DISABLED);
+    	if(obj == null && (weatherDisabled == null || ((Boolean)weatherDisabled).booleanValue() == false)) {
     		Application.getApplication().invokeLater(new Runnable() {
     			public void run() {
     				Dialog dlg = new Dialog(Dialog.D_YES_NO, STR_SETUP_WEATHER, Dialog.NO, Bitmap.getPredefinedBitmap(Bitmap.QUESTION), 0);
@@ -420,6 +421,8 @@ class MusicalClockMainScreen extends MainScreen
     				if(dlg.getSelectedValue() == Dialog.YES) { 
     					startWeather();
     				}
+    				config.setKeyValue(MusicalClockContext.KEY_WEATHER_DISABLED, new Boolean(true));
+    				config.saveSettings();
     				dlg.close();
     			}
     		});
@@ -594,10 +597,15 @@ class MusicalClockMainScreen extends MainScreen
     private void refreshWeather() {
 		if(_weatherBanner == null) {
 			_weatherBanner = new WeatherBanner();
+			_weatherBanner.updateWeather(_weatherInfoList);	
 			//_vfm.add(_weatherBanner);
-			this.insert(_weatherBanner, 0);
+			_container.add(_weatherBanner);
+			this.refreshClock();
+			_container.invalidate();
 		}
-		_weatherBanner.updateWeather(_weatherInfoList);	
+		else {
+			_weatherBanner.updateWeather(_weatherInfoList);	
+		}
 		this.invalidate();
     }
     
