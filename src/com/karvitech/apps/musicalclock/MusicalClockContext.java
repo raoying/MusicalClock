@@ -73,6 +73,12 @@ class MusicalClockContext implements RealtimeClockListener {
             return false;
         }        
     }
+    
+    public boolean showInCelsiusUnit() {
+    	Boolean showInCelsius = (Boolean)Configuration.getInstance().getKeyValue(KEY_WEATHER_USE_CELSIUS);
+    	return showInCelsius.booleanValue();
+    }
+    
     Vector getAlarmItemList() {
         return _alarmItemList;
     }

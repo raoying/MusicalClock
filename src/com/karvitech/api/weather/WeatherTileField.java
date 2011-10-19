@@ -27,7 +27,7 @@ public class WeatherTileField extends Field {
     private static int _titleFontSize;
     private static int _detailsFontSize;
     private static int _detailsYOffset;
-    public static boolean Fahrenheit;
+    public static boolean _showInCelsiusUnit;
     
     
     public void updateWeather(DayWeatherInfo dayInfo) {
@@ -117,7 +117,7 @@ public class WeatherTileField extends Field {
         //this.setFont(font);
         graphics.setFont(font);
         String text = null;
-        if(Fahrenheit) {
+        if(!_showInCelsiusUnit) {
         	text = (int)(_lowTemp*9/5+32) + "\u00b0/" + (int)(_highTemp*9/5 + 32) + '\u00b0';
         }
         else {

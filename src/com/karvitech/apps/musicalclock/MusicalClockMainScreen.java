@@ -594,17 +594,26 @@ class MusicalClockMainScreen extends MainScreen
         // super.sublayout(Display.getWidth(), Display.getHeight());
     }        
 
+    private boolean showWeather() {
+    	Boolean weatherDisabled = (Boolean)Configuration.getInstance().getKeyValue(MusicalClockContext.KEY_WEATHER_DISABLED);
+    	if(weatherDisabled!= null && weatherDisabled.booleanValue()) {
+    		return false;
+    	}
+    	return true;
+    }
     private void refreshWeather() {
 		if(_weatherBanner == null) {
-			_weatherBanner = new WeatherBanner();
-			_weatherBanner.updateWeather(_weatherInfoList);	
-			//_vfm.add(_weatherBanner);
-			_container.add(_weatherBanner);
-			this.refreshClock();
-			_container.invalidate();
+			if(showWeather()) {
+				_weatherBanner = new WeatherBanner(MusicalClockContext.getInstance().showInCelsiusUnit());
+				_weatherBanner.updateWeather(_weatherInfoList, MusicalClockContext.getInstance().showInCelsiusUnit());	
+				//_vfm.add(_weatherBanner);
+				_container.add(_weatherBanner);
+				this.refreshClock();
+				_container.invalidate();
+			}
 		}
 		else {
-			_weatherBanner.updateWeather(_weatherInfoList);	
+			_weatherBanner.updateWeather(_weatherInfoList,MusicalClockContext.getInstance().showInCelsiusUnit());	
 		}
 		this.invalidate();
     }
@@ -612,6 +621,9 @@ class MusicalClockMainScreen extends MainScreen
     // implements the listener
     public void configurationChanged() {
         this.refreshClock();
+    	if(showWeather()) {
+    		this.refreshWeather();
+    	}
     }
    /**
     * implement the RealtimeClockListener interface
