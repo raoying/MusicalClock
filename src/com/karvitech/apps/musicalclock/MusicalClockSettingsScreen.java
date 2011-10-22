@@ -34,14 +34,20 @@ class MusicalClockSettingsScreen extends MainScreen {
     final static String STR_SHOW_WHEN_PLUGGED = "Show when charging";
     final static String STR_USE_Fahrenheit = "Use Fahrenheit unit";
     final static String STR_USE_Celsius  = "Use Celsius unit ";
-    final static String STR_BACK_LIGHT_WARNING = "Keeping backlight on will prevent the phone from locking itself if you have a password. Do you still want to proceed?"; 
+    final static String STR_BACK_LIGHT_WARNING = "Keeping backlight on will prevent the phone from locking itself if you have a password. Do you still want to proceed?";
+	private static final String STR_LATITUDE = "Latitude";
+	private static final String STR_LONGITUDE = "Longitude"; 
     
     KtListSwitchItem _militaryTime;
     KtListSwitchItem _keepBacklightOnWhenCharging;
     KtListSwitchItem _showWhenCharging;
     KtListItem _tempUnit;
+    KtListItem _lati;
+    KtListItem _longi;
     
     boolean _usingCelsius;
+    String latStr;
+    String lonStr;
     
     MusicalClockGlobalSettingItem2 _globalSettings;
     FieldChangeListener _listener = new FieldChangeListener()
@@ -66,9 +72,30 @@ class MusicalClockSettingsScreen extends MainScreen {
             	}
             	_tempUnit.invalidate();
             }
+            else if(field == _lati) {
+            	setLocationValue(STR_LATITUDE, latStr, _lati);;
+            }
+            else if(field == _longi) {
+            	setLocationValue(STR_LONGITUDE, lonStr, _longi);;
+            }
         }
     };
     
+    private void setLocationValue(String displayStr, String locationStr, KtListItem item) {
+        KtQuerryDialog dlg = new KtQuerryDialog(displayStr, locationStr);
+        // dlg.setDialogClosedListener(this);
+         dlg.doModal();
+         String str = dlg.getText();
+         try {
+        	 float fVal = Float.parseFloat(str);
+        	 locationStr = str;
+             item.setDetails(locationStr);
+             item.invalidate();
+         }
+         catch(Exception e) {
+        	 Dialog.inform("Please type in a valid number.");
+         }    	
+    }
     MusicalClockSettingsScreen() {
     	Configuration config = Configuration.getInstance();
         _globalSettings = (MusicalClockGlobalSettingItem2)config.getKeyValue(MusicalClockContext.KEY_GLOBAL_SETTINGS_2);                    
@@ -99,6 +126,29 @@ class MusicalClockSettingsScreen extends MainScreen {
         _tempUnit.setChangeListener(_listener);
         add(_tempUnit);
         add(new SeparatorField());
+        Object lat = config.getKeyValue(MusicalClockContext.KEY_WEATHER_LOCATION_LAT);
+		if(lat != null) {
+			latStr = lat.toString();
+		}
+		else {
+			latStr = "N/A";
+		}
+        Object lon = config.getKeyValue(MusicalClockContext.KEY_WEATHER_LOCATION_LONG);
+		if(lat != null) {
+			lonStr = lon.toString();
+		}
+		else {
+			lonStr = "N/A";
+		}		
+        _lati = new KtListItem(STR_LATITUDE, latStr, 0);
+		_longi =  new KtListItem(STR_LONGITUDE, lonStr, 0);
+		_lati.setChangeListener(_listener);
+		_longi.setChangeListener(_listener);
+		
+        add(_lati);
+        add(new SeparatorField());
+        add(_longi);
+        add(new SeparatorField());
     }
     
     protected boolean saveSettings() {
@@ -106,6 +156,8 @@ class MusicalClockSettingsScreen extends MainScreen {
         _globalSettings.setMilitaryTime(_militaryTime.getSwitchState());
         _globalSettings.setshowWhenCharing(_showWhenCharging.getSwitchState());
         Configuration.getInstance().setKeyValue(MusicalClockContext.KEY_WEATHER_USE_CELSIUS, new Boolean(_usingCelsius));
+        Configuration.getInstance().setKeyValue(MusicalClockContext.KEY_WEATHER_LOCATION_LAT, new Float(Float.parseFloat(latStr)));
+        Configuration.getInstance().setKeyValue(MusicalClockContext.KEY_WEATHER_LOCATION_LONG, new Float(Float.parseFloat(lonStr)));
         Configuration.getInstance().saveSettings();
         return true;
     }

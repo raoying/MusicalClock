@@ -1,10 +1,14 @@
 package com.karvitech.api.weather;
 
+import java.io.IOException;
 import java.io.InputStream;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.TimeZone;
 import java.util.Vector;
+
+import javax.microedition.io.Connector;
+import javax.microedition.io.HttpConnection;
 
 import net.rim.device.api.util.DateTimeUtilities;
 import net.rim.device.api.xml.parsers.DocumentBuilder;
@@ -147,12 +151,12 @@ public class WeatherUtils {
 	public static InputStream readXmlFromUrl(String uri) {
         try {
         	InputStream is;
-            Class classs = Class.forName(uri);
+            //Class classs = Class.forName(uri);
             
             
             //to actually retrieve the resource prefix the name of the file with a "/"
-            is = classs.getResourceAsStream("/weather_data.xml");
-/*
+           // is = classs.getResourceAsStream("/weather_data.xml");
+
         	HttpConnection	conn = (HttpConnection)Connector.open(uri);
         	int rc = conn.getResponseCode();
         	if (rc != HttpConnection.HTTP_OK)
@@ -160,7 +164,7 @@ public class WeatherUtils {
         		throw new IOException("HTTP response code: " + rc);
         	}
         	
-            is = conn.openInputStream();*/
+            is = conn.openInputStream();
             return is;
         }
         catch (Exception e) {
