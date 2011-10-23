@@ -31,6 +31,7 @@ class MusicalClockContext implements RealtimeClockListener {
 	public static final boolean free_version = false;
 //#endif	
     // configuration keys    
+	public static int MINUTES_IN_THREE_HOURS = 180;
     public static int KEY_TERM_ACCEPTED = 1;
     public static int KEY_GLOBAL_SETTINGS = 2;
     public static int KEY_ALARM_LIST = 3;
@@ -93,7 +94,8 @@ class MusicalClockContext implements RealtimeClockListener {
     } 
     private void checkWeather() {
     	_minutesPassed += 1;
-    	if(_minutesPassed >= 300) {
+    	if(_minutesPassed > MINUTES_IN_THREE_HOURS) {
+    	
     		_minutesPassed = 0;
     		Configuration config = Configuration.getInstance();
     		

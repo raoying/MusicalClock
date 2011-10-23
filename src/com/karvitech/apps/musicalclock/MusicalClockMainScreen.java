@@ -115,7 +115,7 @@ class MusicalClockMainScreen extends MainScreen
         }
     };
     
-    private MenuItem _enableWeatherMenuItem = new MenuItem("Enable Weather", 100, 10)
+    private MenuItem _enableWeatherMenuItem = new MenuItem("Show Weather", 100, 10)
     {   
         public void run()
         {
@@ -126,6 +126,7 @@ class MusicalClockMainScreen extends MainScreen
         				dlg.doModal();
         				if(dlg.getSelectedValue() == Dialog.YES) { 
         					startWeather();
+        					config.setKeyValue(MusicalClockContext.KEY_WEATHER_DISABLED, new Boolean(false));
         					dlg.close();
         					return;
         				}
@@ -708,9 +709,12 @@ class MusicalClockMainScreen extends MainScreen
 	/**
 	 * Implementing WeatherInfoListener
 	 */
-	public void WeatherInfoChanged(Vector weatherInfo) {
+	public synchronized void  WeatherInfoChanged(Vector weatherInfo) {
 		// TODO Auto-generated method stub
 		if(weatherInfo != null) {
+			if(_weatherInfoList != null) {
+				_weatherInfoList.removeAllElements();
+			}
 			_weatherInfoList = weatherInfo;
     		Application.getApplication().invokeLater(new Runnable() {
     			public void run() {
