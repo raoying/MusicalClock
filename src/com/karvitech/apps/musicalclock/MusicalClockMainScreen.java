@@ -665,11 +665,14 @@ class MusicalClockMainScreen extends MainScreen
     	if(_weatherBanner == null||_weatherInfoList == null) {
     		return;
     	}
-    	
+
     	long milliSec = System.currentTimeMillis();
-    	if(DateTimeUtilities.isSameDate(milliSec, _lastCheckMilliSec)) {
+    	if(_lastCheckMilliSec == 0) {
+    		_lastCheckMilliSec = milliSec;
+    		return;
+    	}
+    	if(!DateTimeUtilities.isSameDate(milliSec, _lastCheckMilliSec)) {
     		// a new day
-    		
     		DayWeatherInfo info = (DayWeatherInfo)_weatherInfoList.elementAt(0);
     		if(DateTimeUtilities.isSameDate(milliSec, info.dayStartTime)) {
     			_weatherInfoList.removeElementAt(0);

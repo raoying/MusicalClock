@@ -34,11 +34,18 @@ public class WeatherBanner extends HorizontalFieldManager {
 			return;
 		}
 		
-		for(int i=0; i<NUMBER_OF_DAYS;i++) {
-			WeatherTileField tile = (WeatherTileField)_weatherTiles.elementAt(i);
-			DayWeatherInfo dayInfo = (DayWeatherInfo)infoList.elementAt(i);
-			tile.updateWeather(dayInfo);
-			tile._showInCelsiusUnit = _showInCelsiusUnit;
+		WeatherTileField._showInCelsiusUnit = _showInCelsiusUnit;
+		
+		// set up the first tile
+		WeatherTileField tile = (WeatherTileField)_weatherTiles.elementAt(0);
+		DayWeatherInfo dayInfo = (DayWeatherInfo)infoList.elementAt(0);
+		tile.updateWeather(dayInfo, true);
+		
+		// setup the remaining tiles
+		for(int i=0; i<NUMBER_OF_DAYS-1;i++) {
+			tile = (WeatherTileField)_weatherTiles.elementAt(i+1);
+			dayInfo = (DayWeatherInfo)infoList.elementAt(i);
+			tile.updateWeather(dayInfo, false);
 		}
 	}
 }

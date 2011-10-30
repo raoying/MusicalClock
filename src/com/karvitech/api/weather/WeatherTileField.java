@@ -23,16 +23,20 @@ public class WeatherTileField extends Field {
     private char _unit;
     private DayWeatherInfo _dayInfo;
     private static int _orientation;
-    
     private static int _titleFontSize;
     private static int _detailsFontSize;
     private static int _detailsYOffset;
     public static boolean _showInCelsiusUnit;
     
+    private boolean _firstTitle;
+    
+    
     public void refreshData() {
+    	_symbolImage = this.getSymbolImage(_dayInfo.getCurrentSymbol());
     	
     }
-    public void updateWeather(DayWeatherInfo dayInfo) {
+    public void updateWeather(DayWeatherInfo dayInfo, boolean firstTitle) {
+    	_firstTitle = firstTitle;
     	_orientation = Display.getOrientation();
     	_dayInfo = dayInfo;
     	_highTemp = dayInfo.getHighTemp();
@@ -119,27 +123,37 @@ public class WeatherTileField extends Field {
         //this.setFont(font);
         graphics.setFont(font);
         String text = null;
-        if(!_showInCelsiusUnit) {
-        	text = (int)(_lowTemp*9/5+32) + "\u00b0/" + (int)(_highTemp*9/5 + 32) + '\u00b0';
-        }
+        
+        // if not the current temp, then show the high and low 
+        if(!_firstTitle) {
+	        if(!_showInCelsiusUnit) {
+	        	text = (int)(_lowTemp*9/5+32) + "\u00b0/" + (int)(_highTemp*9/5 + 32) + '\u00b0';
+	        }
+	        else {
+	        	text = (int)_lowTemp + "\u00b0/" + (int)_highTemp + '\u00b0';
+	        }
+        } 
         else {
-        	text = (int)_lowTemp + "\u00b0/" + (int)_highTemp + '\u00b0';
+        	text =  _dayInfo.getCurrentTemprature() +  "\u00b0";
         }
+
         if(text != null) {
-            // for title, color is black if unfocused
-            if(this.isFocus()) {
-            	graphics.setColor(Color.WHITE);
-            } else {
-            	graphics.setColor(Color.WHITE);
-            }
-            
-           // String dayStr = "Fri";
-            int textXOffset = (this.getPreferredWidth() - font.getAdvance(_dayInfo.dayInWeekStr)) >> 1;
-            graphics.drawText(_dayInfo.dayInWeekStr, textXOffset,2,0,this.getWidth());
-            //int yOffset = (_details != null)?2:12;
+        	int textXOffset;
+            graphics.setColor(Color.WHITE);
             textXOffset = (this.getPreferredWidth() - font.getAdvance(text)) >> 1;
             graphics.drawText(text, textXOffset, fontHeight + imgHeight,0,this.getWidth());
         }
+
+        // draw day string or "Now"
+        if(_firstTitle) {
+        	text = "Now";
+        }
+        else {
+        	text = _dayInfo.dayInWeekStr;
+        }
+        int textXOffset = (this.getPreferredWidth() - font.getAdvance(text)) >> 1;
+        graphics.drawText(text, textXOffset,2,0,this.getWidth());
+
         this.setFont(oldFont);
         graphics.setFont(oldFont);
 	}
