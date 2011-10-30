@@ -31,7 +31,7 @@ class MusicalClockContext implements RealtimeClockListener {
 	public static final boolean free_version = false;
 //#endif	
     // configuration keys    
-	public static int MINUTES_INTERVAL = 60*3;
+	public static int MINUTES_INTERVAL = 60*24;
     public static int KEY_TERM_ACCEPTED = 1;
     public static int KEY_GLOBAL_SETTINGS = 2;
     public static int KEY_ALARM_LIST = 3;

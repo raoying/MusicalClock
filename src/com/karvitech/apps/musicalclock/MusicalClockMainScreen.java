@@ -55,7 +55,7 @@ class MusicalClockMainScreen extends MainScreen
 										LocationListener,
 										WeatherInfoListener {
     private final static String STR_SHUT_DOWN_WARNING = "The alarms will not be triggered if the app is shut down. Do you want to proceed?";
-    private final static String STR_SETUP_WEATHER = "Would you like to setup weather using your current location? It may take several minutes and please grant the permission to access GPS.";
+    private final static String STR_SETUP_WEATHER = "Would you like to setup weather using your current location? It may take several minutes, and please grant the permission to access GPS.";
     private final static String STR_NO_GPS = "GPS is not available on your phone, please go to Settings to set your location, then click the Show Weather menu item again.";
     private final static String STR_NO_TEMP_GPS = "Failed to aquire location, please try again later. Or go to Settings to set your location, then click the Show Weather menu item.";
    
@@ -141,6 +141,8 @@ class MusicalClockMainScreen extends MainScreen
         public void run()
         {
         	final Configuration config = Configuration.getInstance();
+			config.setKeyValue(MusicalClockContext.KEY_WEATHER_DISABLED, new Boolean(false));
+			config.saveSettings();        	
         	Object obj = config.getKeyValue(MusicalClockContext.KEY_WEATHER_LOCATION_LAT);
         	Object obj1 = config.getKeyValue(MusicalClockContext.KEY_WEATHER_LOCATION_LONG);
         	if(obj != null && obj1 != null) {
@@ -153,24 +155,16 @@ class MusicalClockMainScreen extends MainScreen
         	}
         	
         	// no location info, get it
-        	Application.getApplication().invokeLater(new Runnable() {
-        			public void run() {
-        				Dialog dlg = new Dialog(Dialog.D_YES_NO, STR_SETUP_WEATHER, Dialog.NO, Bitmap.getPredefinedBitmap(Bitmap.QUESTION), 0);
-        				dlg.doModal();
-        				if(dlg.getSelectedValue() == Dialog.YES) { 
-        					//dlg.close();
-        					boolean locationAquired = LocationHelper.getInstance().startLocationUpdate(MusicalClockMainScreen.this);
-        					if(!locationAquired) {
-        						Dialog.alert(STR_NO_TEMP_GPS);
-        					}
-        					config.setKeyValue(MusicalClockContext.KEY_WEATHER_DISABLED, new Boolean(false));
-        					return;
-        				}
-        				config.setKeyValue(MusicalClockContext.KEY_WEATHER_DISABLED, new Boolean(true));
-        				config.saveSettings();
-        				dlg.close();
-        			}
-        		});
+        	getLoactionAndWeather();
+        }
+    };
+    
+    private MenuItem _getWeatherForLocationMenuItem = new MenuItem("Get Weather for current location", 100, 10)
+    {   
+        public void run()
+        {
+        	// no location info, get it
+        	getLoactionAndWeather();
         }
     };
         
@@ -253,6 +247,25 @@ class MusicalClockMainScreen extends MainScreen
         return _instance;
     }
     
+    void getLoactionAndWeather() {
+    	
+    	final Configuration config = Configuration.getInstance();
+    	Application.getApplication().invokeLater(new Runnable() {
+    			public void run() {
+    				Dialog dlg = new Dialog(Dialog.D_YES_NO, STR_SETUP_WEATHER, Dialog.NO, Bitmap.getPredefinedBitmap(Bitmap.QUESTION), 0);
+    				dlg.doModal();
+    				if(dlg.getSelectedValue() == Dialog.YES) { 
+    					//dlg.close();
+    					boolean locationAquired = LocationHelper.getInstance().startLocationUpdate(MusicalClockMainScreen.this);
+    					if(!locationAquired) {
+    						Dialog.alert(STR_NO_TEMP_GPS);
+    					}
+    					return;
+    				}
+    				dlg.close();
+    			}
+    		});
+    }
     void setStyle(int style) {
             _style = style;        
     }
@@ -454,6 +467,7 @@ class MusicalClockMainScreen extends MainScreen
         }
         else {
         	menu.add(_hideWeatherMenuItem);
+        	menu.add(_getWeatherForLocationMenuItem);
         }
         menu.addSeparator();
         if(Configuration.isFreeVersion()) {
