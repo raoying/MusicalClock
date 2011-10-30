@@ -20,6 +20,7 @@ import net.rim.device.api.ui.container.*;
 import net.rim.device.api.ui.component.*;
 import net.rim.device.api.system.RealtimeClockListener;
 import net.rim.device.api.ui.MenuItem;
+import net.rim.device.api.util.DateTimeUtilities;
 //import com.karvitech.apps.utilities.*;
 import javax.microedition.content.*;
 import javax.microedition.location.Location;
@@ -55,18 +56,25 @@ class MusicalClockMainScreen extends MainScreen
 										WeatherInfoListener {
     private final static String STR_SHUT_DOWN_WARNING = "The alarms will not be triggered if the app is shut down. Do you want to proceed?";
     private final static String STR_SETUP_WEATHER = "Would you like to setup weather using your current location?";
+    private final static String STR_NO_GPS = "GPS is not available on your phone, please go to Settings to set your location, then click the Show Weather menu item again.";
+    private final static String STR_NO_TEMP_GPS = "Failed to aquire location, please try again later. Or go to Settings to set your location, then click the Show Weather menu item.";
+   
     private static final int MODE_NORMAL = 0;        // normal, just show the time
     private static final int MODE_SETTING_STYLE = 1; // setting style mode, user can set style
 
+    private static final long THREE_HOURS_IN_MILLISECONDS = 3*60*60*1000;
 //#ifdef FREE_VERSION
     public static final int AD_HEIGHT = 53;
 //#else
     public static final int AD_HEIGHT = 0;
 //#endif
     
+    
+    
     private static int AD_PACEMENT_ID = 34898;
     private static String INNER_ACTIVE_AD_ID = "KarviTech_MusicalClock_BB";
-        
+    
+    private long _lastCheckMilliSec; // last time checked weather state
     private Calendar _cal = Calendar.getInstance();
     private Vector _settings;
     private LabelField _timeLabel = new LabelField();
@@ -114,20 +122,42 @@ class MusicalClockMainScreen extends MainScreen
 		    refreshWeather();
         }
     };
+
+    private MenuItem _hideWeatherMenuItem = new MenuItem("Hide Weather", 100, 10)
+    {   
+        public void run()
+        {
+        	_container.delete(_weatherBanner);
+        	_weatherBanner = null;
+        	refreshClock();
+        }
+    };
     
     private MenuItem _enableWeatherMenuItem = new MenuItem("Show Weather", 100, 10)
     {   
         public void run()
         {
         	final Configuration config = Configuration.getInstance();
+        	Object obj = config.getKeyValue(MusicalClockContext.KEY_WEATHER_LOCATION_LAT);
+        	Object obj1 = config.getKeyValue(MusicalClockContext.KEY_WEATHER_LOCATION_LONG);
+        	if(obj != null && obj1 != null) {
+                // start updating the weather
+        		float latitude = ((Float)obj).floatValue();
+        		float longitude = ((Float)obj1).floatValue();
+                new Thread(new UpdateWeatherRunnable(latitude,longitude,MusicalClockMainScreen.this)).start();
+                return;
+        	}
         	Application.getApplication().invokeLater(new Runnable() {
         			public void run() {
         				Dialog dlg = new Dialog(Dialog.D_YES_NO, STR_SETUP_WEATHER, Dialog.NO, Bitmap.getPredefinedBitmap(Bitmap.QUESTION), 0);
         				dlg.doModal();
         				if(dlg.getSelectedValue() == Dialog.YES) { 
-        					startWeather();
+        					//dlg.close();
+        					boolean locationAquired = LocationHelper.getInstance().startLocationUpdate(MusicalClockMainScreen.this);
+        					if(!locationAquired) {
+        						Dialog.alert(STR_NO_TEMP_GPS);
+        					}
         					config.setKeyValue(MusicalClockContext.KEY_WEATHER_DISABLED, new Boolean(false));
-        					dlg.close();
         					return;
         				}
         				config.setKeyValue(MusicalClockContext.KEY_WEATHER_DISABLED, new Boolean(true));
@@ -413,8 +443,12 @@ class MusicalClockMainScreen extends MainScreen
         }*/
         menu.add(_changeStyleMenuItem);        
         menu.add(_shutDownMenuItem);
-        menu.add(_weatherMenuItem);
-        menu.add(_enableWeatherMenuItem);
+        if(_weatherBanner == null) {
+        	menu.add(_enableWeatherMenuItem);
+        }
+        else {
+        	menu.add(_hideWeatherMenuItem);
+        }
         menu.addSeparator();
         if(Configuration.isFreeVersion()) {
              menu.addSeparator();
@@ -455,10 +489,6 @@ class MusicalClockMainScreen extends MainScreen
     	super.onExposed();
     }*/
     
-    private void   startWeather() {
-    	LocationHelper.getInstance().startLocationUpdate(this);
-    	
-    }
    /**
     * @see Screen#touchEvent(TouchEvent)
     * This implementation outputs Touch Event notifications to standard output
@@ -628,17 +658,39 @@ class MusicalClockMainScreen extends MainScreen
     	}
     	return false;
     }
-    private boolean showWeather() {
-    	Boolean weatherDisabled = (Boolean)Configuration.getInstance().getKeyValue(MusicalClockContext.KEY_WEATHER_DISABLED);
-    	if(weatherDisabled!= null && weatherDisabled.booleanValue()) {
-    		return false;
+    
+    public void updateWeatherIfNeeded() {
+    	boolean needToUpdate;
+    	// check the time to see if should update the weather display
+    	if(_weatherBanner == null||_weatherInfoList == null) {
+    		return;
     	}
-    	return true;
+    	
+    	long milliSec = System.currentTimeMillis();
+    	if(DateTimeUtilities.isSameDate(milliSec, _lastCheckMilliSec)) {
+    		// a new day
+    		
+    		DayWeatherInfo info = (DayWeatherInfo)_weatherInfoList.elementAt(0);
+    		if(DateTimeUtilities.isSameDate(milliSec, info.dayStartTime)) {
+    			_weatherInfoList.removeElementAt(0);
+    			_weatherBanner.updateWeather(_weatherInfoList);
+    		}
+    		_lastCheckMilliSec = milliSec;
+    	}
+    	else if((milliSec - _lastCheckMilliSec) > THREE_HOURS_IN_MILLISECONDS) {
+    		// more than 3 hours compared to last check
+    		// need to use the new time period data for the first tile
+    		_weatherBanner.refreshCurrentData();
+    		_lastCheckMilliSec = milliSec;
+    	}
+    	
+    	
+    	
     }
     private void refreshWeather() {
     	
 		if(_weatherBanner == null) {
-			if(showWeather() && _weatherInfoList != null) {
+			if(MusicalClockContext.showWeather() && _weatherInfoList != null) {
 				_weatherBanner = new WeatherBanner(MusicalClockContext.getInstance().showInCelsiusUnit());
 				_weatherBanner.updateWeather(_weatherInfoList, MusicalClockContext.getInstance().showInCelsiusUnit());	
 				//_vfm.add(_weatherBanner);
@@ -656,7 +708,7 @@ class MusicalClockMainScreen extends MainScreen
     // implements the listener
     public void configurationChanged() {
         this.refreshClock();
-    	if(showWeather()) {
+    	if(MusicalClockContext.showWeather()) {
     		Application.getApplication().invokeLater(new Runnable() {
     			public void run() {
     				refreshWeather();
@@ -703,6 +755,27 @@ class MusicalClockMainScreen extends MainScreen
 	
 	public void providerStateChanged(LocationProvider provider, int newState) {
 		// TODO Auto-generated method stub
+		System.out.println("Locatin provider state = " + newState);
+		final String alertStr;
+		
+		if(newState == LocationProvider.AVAILABLE) {
+			return;
+		}
+		
+		if(newState == LocationProvider.OUT_OF_SERVICE) {
+			alertStr = STR_NO_GPS;
+		}
+		else {
+			alertStr = STR_NO_TEMP_GPS;
+		}
+        
+		UiApplication.getUiApplication().invokeLater(new Runnable()
+            {
+                public void run()
+                {
+                    Dialog.alert(alertStr);
+                }
+            });
 		
 	}
 

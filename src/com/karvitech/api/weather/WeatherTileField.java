@@ -29,7 +29,9 @@ public class WeatherTileField extends Field {
     private static int _detailsYOffset;
     public static boolean _showInCelsiusUnit;
     
-    
+    public void refreshData() {
+    	
+    }
     public void updateWeather(DayWeatherInfo dayInfo) {
     	_orientation = Display.getOrientation();
     	_dayInfo = dayInfo;

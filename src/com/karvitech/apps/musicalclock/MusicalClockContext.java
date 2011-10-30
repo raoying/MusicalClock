@@ -31,7 +31,7 @@ class MusicalClockContext implements RealtimeClockListener {
 	public static final boolean free_version = false;
 //#endif	
     // configuration keys    
-	public static int MINUTES_IN_THREE_HOURS = 180;
+	public static int MINUTES_INTERVAL = 60*3;
     public static int KEY_TERM_ACCEPTED = 1;
     public static int KEY_GLOBAL_SETTINGS = 2;
     public static int KEY_ALARM_LIST = 3;
@@ -74,6 +74,13 @@ class MusicalClockContext implements RealtimeClockListener {
             return false;
         }        
     }
+    public static boolean showWeather() {
+    	Boolean weatherDisabled = (Boolean)Configuration.getInstance().getKeyValue(MusicalClockContext.KEY_WEATHER_DISABLED);
+    	if(weatherDisabled!= null && weatherDisabled.booleanValue()) {
+    		return false;
+    	}
+    	return true;
+    }
     
     public boolean showInCelsiusUnit() {
     	Boolean showInCelsius = (Boolean)Configuration.getInstance().getKeyValue(KEY_WEATHER_USE_CELSIUS);
@@ -93,16 +100,20 @@ class MusicalClockContext implements RealtimeClockListener {
         checkWeather();
     } 
     private void checkWeather() {
+    	if(!showWeather()) {
+    		return;
+    	}
     	_minutesPassed += 1;
-    	if(_minutesPassed > MINUTES_IN_THREE_HOURS) {
-    	
+    	if(_minutesPassed > MINUTES_INTERVAL) {
+    		// needs to get the new weather data
     		_minutesPassed = 0;
     		Configuration config = Configuration.getInstance();
     		
-            double longitude = ((Float)config.getKeyValue(KEY_WEATHER_LOCATION_LAT)).doubleValue();
-            double latitude = ((Float)config.getKeyValue(KEY_WEATHER_LOCATION_LONG)).doubleValue();;
+            double longitude = ((Float)config.getKeyValue(KEY_WEATHER_LOCATION_LONG)).doubleValue();
+            double latitude = ((Float)config.getKeyValue(KEY_WEATHER_LOCATION_LAT)).doubleValue();;
             new Thread(new UpdateWeatherRunnable(latitude,longitude,MusicalClockMainScreen.getInstance())).start();
     	}
+    	MusicalClockMainScreen.getInstance().updateWeatherIfNeeded();
     }
     
     private void checkAlarms() {

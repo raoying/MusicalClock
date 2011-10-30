@@ -49,7 +49,8 @@ public class DayWeatherInfo {
 	// 4 points, every 6 hours
 	Vector pointWeatherInfo = new Vector(POINT_NUM);
 	
-	String dateStr; // in utc
+	public String dateStr; // in utc
+	public long dayStartTime; 
 	String dayInWeekStr;
 	String tempUnit; // C or F
 	private float _highTemp = Float.MIN_VALUE;
@@ -76,9 +77,83 @@ public class DayWeatherInfo {
 		return _lowTemp;	
 	}
 
+	/**
+	 * 
+	 * @return
+	 */
+	public float getCurrentTemprature() {
+		int index = 0;
+		long smallestDiff = Long.MAX_VALUE;
+		long curTime = System.currentTimeMillis();
+		PointWeatherInfo pointInfo = null;
+		for(int i=0;i<pointWeatherInfo.size();i++) {
+			pointInfo = (PointWeatherInfo)pointWeatherInfo.elementAt(i); 
+			long pointTime = pointInfo.getPointTime();
+			long diff = Math.abs(pointTime - curTime);
+			if(smallestDiff > diff) {
+				smallestDiff = diff;
+				index = i;
+			}
+		}
+		pointInfo = (PointWeatherInfo)pointWeatherInfo.elementAt(index);
+		return pointInfo.temprature;
+	}
 	public int getCurrentSymbol() {
+		for(int i=0;i<periodWeatherInfo.size();i++) {
+			PeriodWeatherInfo periodInfo = (PeriodWeatherInfo)periodWeatherInfo.elementAt(i);
+			long curTime = System.currentTimeMillis();
+			if(curTime >= periodInfo.getStartTime() && curTime <= periodInfo.getEndTime()) {
+				return periodInfo.symbolId;
+			}
+		}
+		
 		PeriodWeatherInfo periodInfo = (PeriodWeatherInfo)periodWeatherInfo.elementAt(0);
 		return periodInfo.symbolId;
+	}
+	
+	/**
+	 * the symbol to reflect the weather conditions of the whole day
+	 * @return
+	 */
+	public int getAllDaySymbol() {
+		boolean hasSun;
+		boolean hasRain;
+		boolean hasSnow;
+		boolean hasFog;
+		boolean hasCloud;
+		boolean hasThunder;
+		
+		for(int i=0;i<periodWeatherInfo.size();i++) {
+			PeriodWeatherInfo periodInfo = (PeriodWeatherInfo)periodWeatherInfo.elementAt(i);
+			
+			// hasSun
+			if(periodInfo.symbolId == SUN 
+					|| periodInfo.symbolId == LIGHT_RAIN_SUN
+					|| periodInfo.symbolId == SNOW_SUN
+					|| periodInfo.symbolId == SLEET_SUN
+					|| periodInfo.symbolId == LIGHT_RAIN_THUNDER_SUN) {
+				hasSun = true;
+			}
+			
+			// has rain
+			if(periodInfo.symbolId == RAIN
+				||periodInfo.symbolId == LIGHT_RAIN_THUNDER_SUN
+				||periodInfo.symbolId == LIGHT_RAIN
+				||periodInfo.symbolId == RAIN_THUNDER
+				||periodInfo.symbolId == LIGHT_RAIN_THUNDER_SUN
+				||periodInfo.symbolId == LIGHT_RAIN_SUN) {
+				hasRain = true;
+			}
+			// has thunder
+			if(periodInfo.symbolId == LIGHT_RAIN_THUNDER_SUN
+				||periodInfo.symbolId == LIGHT_RAIN
+				||periodInfo.symbolId == RAIN_THUNDER
+				||periodInfo.symbolId == LIGHT_RAIN_THUNDER_SUN
+				||periodInfo.symbolId == LIGHT_RAIN_SUN) {
+				hasRain = true;
+			}				
+		}
+		return 0;
 	}
 	public void clear() {
 		periodWeatherInfo.removeAllElements();
@@ -95,22 +170,40 @@ public class DayWeatherInfo {
 	}
 
 	public static class PeriodWeatherInfo  {
-		public String startTime;
-		public int timeSpan; // 3 or 6 hours
+		private long startTime;
+		private long endTime;
 		public String symbol;
 		public int symbolId;
 		public int preceipation;
 		
+		public void setStartTime(String timeStr) {
+			startTime  =  TimeUtilities.stringToDate(timeStr).getTime();	
+		}
+		public void setEndTime(String timeStr) {
+			endTime  =  TimeUtilities.stringToDate(timeStr).getTime();	
+		}
+		public long getStartTime() {
+			return startTime;
+		}
+		
+		public long getEndTime() {
+			return endTime;
+		}		
 	}
 	
 	public static class PointWeatherInfo { // every 6 hours
-		public String startTime;
+		public String timeStr;
 		public float temprature; // this is the only field currently we care
 		public String tempratureUnit;
 		public float  chanceOfRain;
 		public WindInfo windInfo;
 		public CloudInfo cloundInfo;
 		public PrecipitationInfo rainInfo;
+		
+		public long getPointTime() {
+			long timeInMilliSec =  TimeUtilities.stringToDate(timeStr).getTime();
+			return timeInMilliSec;
+		}
 	}
 	
 	private class WindInfo {

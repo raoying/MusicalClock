@@ -77,6 +77,8 @@ public class WeatherUtils {
 					dayWeatherInfo.dateStr = startTimeOfDay;
 					
 					Date dayStartTime = TimeUtilities.stringToDate(startTimeOfDay);
+					dayWeatherInfo.dayStartTime = dayStartTime.getTime();
+					
 					Calendar cal = Calendar.getInstance();
 					cal.setTime(dayStartTime);
 					int dayOfWeek = cal.get(Calendar.DAY_OF_WEEK);
@@ -89,13 +91,15 @@ public class WeatherUtils {
 				if(sectionStartTime.equalsIgnoreCase(endTime)) {
 					// if the start time and end time are the same, then it is time point data
 					pointWeatherInfo = new DayWeatherInfo.PointWeatherInfo();
+					pointWeatherInfo.timeStr = endTime;
 					constructPointInfo( pointWeatherInfo,timeElmnt);
 					dayWeatherInfo.addPointInfo(pointWeatherInfo);
+					
 				}
 				else {
 					// data for a period of 3 or 6 hours
 					periodWeatherInfo = new DayWeatherInfo.PeriodWeatherInfo();
-					constructPeriodInfo(periodWeatherInfo,timeElmnt);
+					constructPeriodInfo(periodWeatherInfo,timeElmnt, sectionStartTime, endTime);
 					dayWeatherInfo.addPeriodInfo(periodWeatherInfo);
 				}
 				index++;
@@ -119,7 +123,11 @@ public class WeatherUtils {
 		}		
 	}
 	
-	public static void constructPeriodInfo(DayWeatherInfo.PeriodWeatherInfo periodWeatherInfo, Element timeElmnt) {
+	public static void constructPeriodInfo(
+							DayWeatherInfo.PeriodWeatherInfo periodWeatherInfo,
+							Element timeElmnt,
+							String sectionStartTime, 
+							String endTime) {
 		NodeList tempList = timeElmnt.getElementsByTagName("symbol");
 		Element symbolElement = (Element) tempList.item(0);
 		
@@ -127,6 +135,10 @@ public class WeatherUtils {
 			periodWeatherInfo.symbol = symbolElement.getAttribute("id");
 			periodWeatherInfo.symbolId = Integer.parseInt(symbolElement.getAttribute("number"));
 		}
+		
+		periodWeatherInfo.setStartTime(sectionStartTime);
+		periodWeatherInfo.setEndTime(endTime);
+		
 	}
 	
 	public static boolean isANewDay(String sectionStartTime, String startTimeOfDay ) {

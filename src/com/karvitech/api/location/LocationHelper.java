@@ -79,8 +79,7 @@ public class LocationHelper {
                 {
                     public void run()
                     {
-                        Dialog.alert("Failed to instantiate LocationProvider object, exiting..." + le.toString());
-                        System.exit(0);
+                        Dialog.alert("Failed to start GPS.");
                     }
                 });
             }

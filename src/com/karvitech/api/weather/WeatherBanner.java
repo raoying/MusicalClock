@@ -17,6 +17,17 @@ public class WeatherBanner extends HorizontalFieldManager {
 			add(tile);
 		}
 	}
+	public void refreshCurrentData() {
+		// the first tile is the current condition
+		// refresh every 3 hours
+		for(int i=0;i<_weatherTiles.size();i++) {
+			WeatherTileField tile = (WeatherTileField)_weatherTiles.elementAt(i);
+			tile.refreshData();
+		}
+	}
+	public void updateWeather(Vector infoList) {
+		updateWeather(infoList, _showInCelsiusUnit);
+	}
 	public void updateWeather(Vector infoList, boolean showInCelsiusUnit) {
 		_showInCelsiusUnit = showInCelsiusUnit;
 		if(infoList == null) {
