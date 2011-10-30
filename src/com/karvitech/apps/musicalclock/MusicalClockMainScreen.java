@@ -55,7 +55,7 @@ class MusicalClockMainScreen extends MainScreen
 										LocationListener,
 										WeatherInfoListener {
     private final static String STR_SHUT_DOWN_WARNING = "The alarms will not be triggered if the app is shut down. Do you want to proceed?";
-    private final static String STR_SETUP_WEATHER = "Would you like to setup weather using your current location?";
+    private final static String STR_SETUP_WEATHER = "Would you like to setup weather using your current location? It may take several minutes and please grant the permission to access GPS.";
     private final static String STR_NO_GPS = "GPS is not available on your phone, please go to Settings to set your location, then click the Show Weather menu item again.";
     private final static String STR_NO_TEMP_GPS = "Failed to aquire location, please try again later. Or go to Settings to set your location, then click the Show Weather menu item.";
    
@@ -127,8 +127,11 @@ class MusicalClockMainScreen extends MainScreen
     {   
         public void run()
         {
+        	final Configuration config = Configuration.getInstance();
         	_container.delete(_weatherBanner);
         	_weatherBanner = null;
+			config.setKeyValue(MusicalClockContext.KEY_WEATHER_DISABLED, new Boolean(true));
+			config.saveSettings();
         	refreshClock();
         }
     };
@@ -141,12 +144,15 @@ class MusicalClockMainScreen extends MainScreen
         	Object obj = config.getKeyValue(MusicalClockContext.KEY_WEATHER_LOCATION_LAT);
         	Object obj1 = config.getKeyValue(MusicalClockContext.KEY_WEATHER_LOCATION_LONG);
         	if(obj != null && obj1 != null) {
+        		// if has location, get wheather data
                 // start updating the weather
         		float latitude = ((Float)obj).floatValue();
         		float longitude = ((Float)obj1).floatValue();
                 new Thread(new UpdateWeatherRunnable(latitude,longitude,MusicalClockMainScreen.this)).start();
                 return;
         	}
+        	
+        	// no location info, get it
         	Application.getApplication().invokeLater(new Runnable() {
         			public void run() {
         				Dialog dlg = new Dialog(Dialog.D_YES_NO, STR_SETUP_WEATHER, Dialog.NO, Bitmap.getPredefinedBitmap(Bitmap.QUESTION), 0);
