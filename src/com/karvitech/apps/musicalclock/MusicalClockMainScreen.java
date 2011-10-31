@@ -694,7 +694,7 @@ class MusicalClockMainScreen extends MainScreen
     	if(!DateTimeUtilities.isSameDate(milliSec, _lastCheckMilliSec)) {
     		// a new day
     		DayWeatherInfo info = (DayWeatherInfo)_weatherInfoList.elementAt(0);
-    		if(DateTimeUtilities.isSameDate(milliSec, info.dayStartTime)) {
+    		if(!DateTimeUtilities.isSameDate(milliSec, info.dayStartTime)) {
     			_weatherInfoList.removeElementAt(0);
     			_weatherBanner.updateWeather(_weatherInfoList);
     		}
