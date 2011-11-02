@@ -453,7 +453,10 @@ public class AlarmItem implements AlarmPlayerListener, Persistable  {
            if(this._alarmToneType == TONE_MUSIC) {       
                 FileUtil.createPlayList(_toneFile, playList);
                 if(playList.size() > 0) {
-                    player.setPlayList(playList, this._lastPlayFileIndex);
+                	// start from last index plus one(next song)
+                	this._lastPlayFileIndex++;
+                	this._lastPlayFileIndex %= playList.size();
+                	player.setPlayList(playList,_lastPlayFileIndex);
                     player.setListener(this);                    
                 }
                 else {        

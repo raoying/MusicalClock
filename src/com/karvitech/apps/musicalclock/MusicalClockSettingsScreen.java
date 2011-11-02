@@ -32,8 +32,8 @@ class MusicalClockSettingsScreen extends MainScreen {
     final static String STR_MILITARY_TIME = "Use 24-hour format";
     final static String STR_KEEP_BACK_LIGHT_ON = "Keep screen on when charging";
     final static String STR_SHOW_WHEN_PLUGGED = "Show when charging";
-    final static String STR_USE_Fahrenheit = "Use Fahrenheit unit";
-    final static String STR_USE_Celsius  = "Use Celsius unit ";
+    final static String STR_USE_Fahrenheit = "Show in Fahrenheit";
+    final static String STR_USE_Celsius  = "Show in Celsius";
     final static String STR_BACK_LIGHT_WARNING = "Keeping backlight on will prevent the phone from locking itself if you have a password. Do you still want to proceed?";
 	private static final String STR_LATITUDE = "Latitude";
 	private static final String STR_LONGITUDE = "Longitude"; 

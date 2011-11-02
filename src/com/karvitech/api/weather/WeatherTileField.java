@@ -134,7 +134,12 @@ public class WeatherTileField extends Field {
 	        }
         } 
         else {
-        	text =  _dayInfo.getCurrentTemprature() +  "\u00b0";
+        	if(!_showInCelsiusUnit) {
+        		text =  (int)(_dayInfo.getCurrentTemprature()*9/5 + 32) +  "\u00b0";
+        	}
+        	else {
+        		text = (int)_dayInfo.getCurrentTemprature() +  "\u00b0";
+        	}
         }
 
         if(text != null) {
@@ -167,7 +172,7 @@ public class WeatherTileField extends Field {
 		if((symbolId >= 1 && symbolId <= 3) ||(symbolId >= 5 && symbolId <= 8)) {
 			Calendar cal = Calendar.getInstance();
 			int hour = cal.get(Calendar.HOUR_OF_DAY);
-			if(hour > 6 && hour < 18) {
+			if(hour >= 6 && hour < 18) {
 				strBuf.append('d');
 			}
 			else {
