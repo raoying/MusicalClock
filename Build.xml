@@ -1,0 +1,240 @@
+<project name="MusicalClock" default="build_bb_5.0.0_trial" basedir=".">
+
+	<!-- HOW TO MAKE AN ECLIPSE PROJECT
+	1)	Select File>New>Project
+	2)	Select Create From Existing Ant Buildfile
+	3)	Navigate to build.xml, select it, and say Finish
+	4)	In the Package Explorer view, delete build.xml from the project
+	5)	Right-click on the project and do New>File
+	6)	Name the file build.xml, then click Advanced
+	7)	Say Link To File and browse to build.xml and say Finish
+	8)	Go to the project properties and import the necessary external jars 
+	9)	In the ANT pane add build.xml
+	-->
+
+
+  <!-- PLEASE MAKE SURE THE FOLLOWING ENVIRONMENT VARIABLES ARE SET:
+    CLIENT_ROOT      (Path to the project folder)
+    JAVA_HOME        (Path to root of Java SDK)
+  -->
+
+  <!-- ALSO ADD YOUR JAVA_HOME/BIN AND ANT_HOME/BIN DIRECTORIES TO YOUR PATH ENVIRONMENT VARIABLE-->
+
+  <property environment="env"/>
+  <property name="JDK_HOME" value="C:\Program Files (x86)\Java\jdk1.6.0_27"/>
+  <property name="RIM_HOME" value="C:\Program Files (x86)\Research In Motion" />
+  <taskdef resource="bb-ant-defs.xml" classpath="C:\bb-ant-tools\bb-ant-tools.jar"/>
+
+ <!-- <property name="libdir" value="${env.CLIENT_ROOT}\..\api\apptools" /> -->	
+  <property name="clientdir" value="${env.CLIENT_ROOT}\MusicalClock" />
+  <property name="bin" value="${clientdir}/bin"/>
+  <property name="res" value="${clientdir}/res"/>
+  <property name="src" value="${clientdir}/src"/>
+  <property name="app_icon_name" value="res/resources/time_80_73.PNG" /> 
+  <property name="javaclasses" value="${clientdir}/tmpclasses"/>	
+  
+  <property name="app_description_txt" value="Weather Alarm Clock plays playlists rather than just a single song for alarms. Supports multiple alarms." /> 
+  <property name="app_description_txt_free" value="This is the free version of the Musical Alarm Clock, which plays playlists rather than just a single song for alarms. And supports multiple alarms." /> 
+  
+  <property name="vendor" value="Karvi Technologies, Inc."/>
+  <property name="version" value="3.0.0" />
+  <property name="copyright" value="Karvi Technologies, Inc." />
+  <property name="app_name" value="Musical Clock " />
+  <property name="app_trial_name" value="Musical Clock Free" />	
+  <property name="output_name" value="MusicalAlarmClock" />	
+  <property name="output_name_free" value="MusicalAlarmClockFree" />
+	
+  <target name="fakeJavac">
+    <javac srcdir="${src}" destdir="${bin}" />
+  </target> 
+
+	  <target name="build_all" depends="clean"> 	
+	  		<antcall target="build_bb_5.0.0" />
+	  		<antcall target="build_bb_5.0.0_trial" />
+	  		<antcall target="build_bb_6.0.0_trial" />
+	  </target>	
+	  <target name="build_all_free" depends="clean"> 	
+	  		<antcall target="build_bb_5.0.0_trial" />
+	  		<antcall target="build_bb_6.0.0_trial" />
+	  </target>		  	
+	  <target name="build_bb_4.6.0" depends="clean">
+		    <property name="app_build_output_name" value="${output_name}" />
+		  	<property name="app_description" value="${app_description_txt}" /> 
+
+	  		<property name="APP_NAME" value="${app_name}" />
+		    <property name="preprocess_defs" value="preprocess" />
+		    <property name="jde_version" value="${RIM_HOME}\BlackBerry JDE 4.6.0\" />	  	   
+		  	<property name="app_icon" value="${app_icon_name}" />
+		  	<property name="alx_dir" value="release46_alx" />
+	  		<property name="jad_dir" value="release46_jad" />
+	  		<property name="ad_sdk_lib" value="${env.CLIENT_ROOT}/../libs/bb_ad_sdk/For_Pre5.0/*.jar" />
+	  		<antcall target="build_core" />
+	  </target>		  
+	 
+	  <target name="build_bb_5.0.0" depends="clean">
+	    	<property name="app_build_output_name" value="${output_name}" />	
+	  		<property name="APP_NAME" value="${app_name}" />
+	  	    <property name="app_description" value="${app_description_txt}" /> 	
+		    <property name="preprocess_defs" value="preprocess" />
+		    <property name="jde_version" value="${RIM_HOME}\BlackBerry JDE 5.0.0\" />	  	   
+		  	<property name="app_icon" value="${app_icon_name}" />
+		  	<property name="alx_dir" value="release50_alx" />
+	  		<property name="jad_dir" value="release50_jad" />	 
+	  		<property name="ad_sdk_lib" value="${env.CLIENT_ROOT}/libs/bb_ad_sdk/For_5.0.0/net_rim_bbapi_adv_app.jar" />
+	  		<antcall target="build_core" />
+	  </target>
+
+
+	  <target name="build_bb_6.0.0" depends="clean">
+		    <property name="app_build_output_name" value="${output_name}" />
+	  		<property name="app_description" value="${app_description_txt}" /> 	
+	  		<property name="APP_NAME" value="${app_name}" />
+		    <property name="preprocess_defs" value="preprocess" />
+		    <property name="jde_version" value="${RIM_HOME}\BlackBerry JDE 6.0.0\" />	  	   
+		  	<property name="app_icon" value="${app_icon_name}" />
+		  	<property name="alx_dir" value="release60_alx" />
+	  		<property name="jad_dir" value="release60_jad" />	  	
+	  		<property name="ad_sdk_lib" value="${env.CLIENT_ROOT}/libs/bb_ad_sdk/For_6.0.0/net_rim_bbapi_adv_app.jar" />	 	  	
+	  		<antcall target="build_core" />
+	  	
+	  </target>	
+	
+
+	  <target name="build_bb_4.6.0_trial" depends="clean">
+		    <property name="app_build_output_name" value="${output_name_free}" />
+  			<property name="app_description" value="${app_description_txt_free}" /> 	
+	  		<property name="APP_NAME" value="${app_trial_name}" />
+		    <property name="preprocess_defs" value="preprocess;FREE_VERSION" />
+		    <property name="jde_version" value="${RIM_HOME}\BlackBerry JDE 4.6.0\" />	  	   
+		  	<property name="app_icon" value="${app_icon_name}" />
+		  	<property name="alx_dir" value="release46_trial_alx" />
+	  		<property name="jad_dir" value="release46_trial_jad" />
+	  		<property name="ad_sdk_lib" value="${env.CLIENT_ROOT}/../libs/bb_ad_sdk/For_Pre5.0/net_rim_bbapi_adv_app.jar" />
+	  		<antcall target="build_core" />
+	  </target>	
+
+	  <target name="build_bb_5.0.0_trial" depends="clean">
+	  		<property name="APP_NAME" value="${app_trial_name}" />
+			<property name="app_description" value="${app_description_txt_free}" /> 	
+	  		<property name="app_build_output_name" value="${output_name_free}" />
+		    <property name="preprocess_defs" value="preprocess;FREE_VERSION" />
+		    <property name="jde_version" value="${RIM_HOME}\BlackBerry JDE 5.0.0\" />	  	   
+		  	<property name="app_icon" value="${app_icon_name}" />
+		  	<property name="alx_dir" value="release50_trial_alx" />
+	  		<property name="jad_dir" value="release50_trial_jad" />	  	
+			<property name="ad_sdk_lib" value="${env.CLIENT_ROOT}/libs/bb_ad_sdk/For_5.0.0" />
+			<property name="3rd_party_libdir" value="${ad_sdk_lib}" /> 
+	  		<antcall target="build_core" />
+	  </target>
+	
+	  <target name="build_bb_6.0.0_trial" depends="clean">
+		    <property name="app_build_output_name" value="${output_name_free}" />
+			<property name="app_description" value="${app_description_txt_free}" /> 	
+		  	<property name="APP_NAME" value="${app_trial_name}" />
+		    <property name="preprocess_defs" value="preprocess;FREE_VERSION" />
+		    <property name="jde_version" value="${RIM_HOME}\BlackBerry JDE 6.0.0\" />	  	   
+		  	<property name="app_icon" value="${app_icon_name}" />
+		  	<property name="alx_dir" value="release60_trial_alx" />
+	  		<property name="jad_dir" value="release60_trial_jad" />
+			<property name="ad_sdk_lib" value="${env.CLIENT_ROOT}/../libs/bb_ad_sdk/For_6.0.0" />
+			<property name="3rd_party_libdir" value="${ad_sdk_lib}" /> 	  	
+ 	  		<antcall target="build_core" />
+	  </target>	
+	
+	  <target name="build_core" depends="clean">
+		  <rapc output="${app_build_output_name}" 
+		        defines="${preprocess_defs}" 
+		  	    jdehome="${jde_version}"    
+		  	    quiet="false"
+		        jdkhome="${JDK_HOME}">
+	      	<jdp title="${APP_NAME}" 
+	      		 vendor="${vendor}" 
+	      		 version="${version}" 
+	      		 type="cldc"
+	    	     description="${app_description}"
+	      		 icon="${app_icon}" >
+	            
+	      		 <entry arguments="init"
+	                   systemmodule="true"
+	                   runonstartup="true"
+	                   startuptier="7"/>	      		
+			</jdp> 
+		    <src>
+		        <fileset dir="${clientdir}/src">
+				     <include name="**/*.java" />	        	
+				     <include name="${app_icon_name}" />
+		        	 <include name="resources/Tones/*" />	
+		        </fileset>
+		       <!-- <fileset dir="${libdir}">
+				     <include name="**/*.java" />	        	
+				     <include name="resources/*" />	
+		        </fileset>  -->
+		        <fileset dir="${3rd_party_libdir}">
+				     <include name="**/*.jar" />	        	
+		        </fileset>
+		    </src> 	
+
+	  	  </rapc>
+	  	
+	  	<alx destdir="${alx_dir}" filename="${app_build_output_name}.alx">
+	  	   <application id="${app_build_output_name}" 
+	  	   	            name="${APP_NAME}"
+   		 			vendor="${vendor}" 
+   		 			version="${version}"
+ 	     				description="${app_description}">
+	  	      <codset>
+	  	         <fileset dir="${clientdir}" includes="*.cod" />
+	  	      </codset>
+	  	   </application>
+	  	</alx>
+	  	
+	  	<jadtool input="${app_build_output_name}.jad" destdir="${jad_dir}">
+	  	   <fileset dir="${clientdir}" includes="*.cod" />
+	  	   <override key="MIDlet-Name" value="${app_name}" />
+	  	   <override key="MIDlet-Vendor" value="${vendor}" />
+		   <override key="MIDlet-Version" value="${version}" />	
+		   <override key="MIDlet-Description" value="${app_description}" />		  		
+	  	</jadtool>
+	  	
+		<copy todir="${alx_dir}">
+		 	<fileset dir="${clientdir}">
+			     <include name="${app_build_output_name}.csl" />	        	
+			     <include name="${app_build_output_name}.cso" />		 		
+		 	</fileset>
+		</copy>
+		<copy todir="${alx_dir}">
+		 	<fileset dir="${jad_dir}">
+			     <include name="${app_build_output_name}.jad" />			 		
+		 	</fileset>
+		</copy>	  		  	
+	  </target>	
+
+  <target name="init" >
+    <tstamp/>
+    <!-- Check for a sane configuration -->
+    <fail unless="env.CLIENT_ROOT">
+        ERROR: Must set CLIENT_ROOT in environment.
+    </fail>
+    <fail unless="env.JAVA_HOME">
+        ERROR: Must set JAVA_HOME in environment.
+    </fail>
+
+    <mkdir dir="${javaclasses}"/>
+    <mkdir dir="${bin}"/>
+
+  </target>
+
+
+  <target name="clean">
+    <delete>
+	    <fileset dir="${clientdir}">
+	    	 <include name="*.jad" />
+		     <include name="*.jar" />	        	
+		     <include name="*.cod" />
+	    	 <include name="*.csl" />
+	    	 <include name="*.cso" />
+	    </fileset>
+    </delete>
+  </target>
+
+</project>
