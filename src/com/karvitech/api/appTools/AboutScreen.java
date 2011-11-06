@@ -16,7 +16,7 @@ import net.rim.device.api.system.DeviceInfo;
 
 public class AboutScreen extends MainScreen {
     static final String STR_ABOUT = "© Karvi Technologies, Inc.";
-    static final String STR_CREDITS = "Weather Symbols and Weather forecast from yr.no, Delivered by the Norwegian Meteorological Institute and the Norwegian Broadcasting Corporation.";
+    static final String STR_CREDITS = "Weather Symbols and Weather forecast from yr.no, delivered by the Norwegian Meteorological Institute and the Norwegian Broadcasting Corporation.";
     static final String STR_TIP_1 = "If there are multiple folders of music files, you can select the parent folder, the app will search recursively in the sub-folders.";
     static final String STR_TIP_2 = "The preloaded ringtones and songs on BB may not be accessible to 3rd party apps, please use your own music files and use the Test button to check if they work.";
     static AboutScreen _instance;
