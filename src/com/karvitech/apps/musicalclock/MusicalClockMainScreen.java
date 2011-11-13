@@ -141,6 +141,14 @@ class MusicalClockMainScreen extends MainScreen
     {   
         public void run()
         {
+        	if(MusicalClockContext.free_version) {
+        		// free version, check if trial expired
+        		if(MusicalClockContext.isTrialExpired()) {
+        			UpgradeDialog.show(true);
+        			return;
+        		}
+        	}
+
         	final Configuration config = Configuration.getInstance();
 			config.setKeyValue(MusicalClockContext.KEY_WEATHER_DISABLED, new Boolean(false));
 			config.saveSettings();        	
@@ -475,6 +483,10 @@ class MusicalClockMainScreen extends MainScreen
         menu.add(_changeStyleMenuItem);        
         menu.add(_shutDownMenuItem);
         if(_weatherBanner == null) {
+        	if(MusicalClockContext.free_version) {
+        		// free version uses a different label
+        		_enableWeatherMenuItem.setText("Show Weather(Trial)");
+        	}
         	menu.add(_enableWeatherMenuItem);
         }
         else {

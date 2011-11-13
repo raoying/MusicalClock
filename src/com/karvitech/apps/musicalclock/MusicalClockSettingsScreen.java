@@ -155,9 +155,20 @@ class MusicalClockSettingsScreen extends MainScreen {
         _globalSettings.setKeepBackLightOn(_keepBacklightOnWhenCharging.getSwitchState());
         _globalSettings.setMilitaryTime(_militaryTime.getSwitchState());
         _globalSettings.setshowWhenCharing(_showWhenCharging.getSwitchState());
-        Configuration.getInstance().setKeyValue(MusicalClockContext.KEY_WEATHER_USE_CELSIUS, new Boolean(_usingCelsius));
-        Configuration.getInstance().setKeyValue(MusicalClockContext.KEY_WEATHER_LOCATION_LAT, new Float(Float.parseFloat(latStr)));
-        Configuration.getInstance().setKeyValue(MusicalClockContext.KEY_WEATHER_LOCATION_LONG, new Float(Float.parseFloat(lonStr)));
+        try {
+	        Configuration.getInstance().setKeyValue(MusicalClockContext.KEY_WEATHER_USE_CELSIUS, new Boolean(_usingCelsius));
+	        latStr = _lati.getDetails();
+	        lonStr = _longi.getDetails();
+	        if(!latStr.equalsIgnoreCase("N/A")) {
+	        	Configuration.getInstance().setKeyValue(MusicalClockContext.KEY_WEATHER_LOCATION_LAT, new Float(Float.parseFloat(latStr)));
+	        }
+	        if(!lonStr.equalsIgnoreCase("N/A")) {
+	        	Configuration.getInstance().setKeyValue(MusicalClockContext.KEY_WEATHER_LOCATION_LONG, new Float(Float.parseFloat(lonStr)));
+	        }
+        }
+        catch (Exception e) {
+        	return false;
+        }
         Configuration.getInstance().saveSettings();
         return true;
     }

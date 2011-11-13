@@ -14,6 +14,8 @@ import java.util.*;
 
 
 import net.rim.device.api.ui.UiApplication;
+import net.rim.device.api.ui.component.Dialog;
+
 import com.karvitech.api.appTools.*;
 import com.karvitech.api.weather.UpdateWeatherRunnable;
 
@@ -43,7 +45,7 @@ class MusicalClockContext implements RealtimeClockListener {
     public static final int KEY_WEATHER_DISABLED = 9;
     public static final int KEY_WEATHER_USE_CELSIUS = 10;
     public static final int KEY_FIRST_TRIAL_RUN_TIME = 11; // this is used for weather trial
-    public static final int KEY_TRIAL_EXPIRE_ACKED = 12; // user has been show the trial expired dialog
+    public static final int KEY_TRIAL_EXPIRE_SHOWN = 12; // user has been shown the trial expired dialog
     
     private static int TRIAL_DAYS = 7;
     private static MusicalClockContext _instance;
@@ -62,9 +64,14 @@ class MusicalClockContext implements RealtimeClockListener {
     }
     
     public static boolean isTrialExpired() {
+    	if(!free_version) {
+    		// paid version, never expire
+    		return false;
+    	}
         Long firstRunTime = (Long)Configuration.getInstance().getKeyValue(KEY_FIRST_TRIAL_RUN_TIME);
         // first run time
         if(firstRunTime == null) {
+        	Dialog.inform("The weather feature is a seven day trial in the free version, it is fully supported in the paid version.");
         	firstRunTime = new Long(System.currentTimeMillis());
             Configuration.getInstance().setKeyValue(MusicalClockContext.KEY_FIRST_TRIAL_RUN_TIME, firstRunTime); 
         }  
@@ -78,7 +85,7 @@ class MusicalClockContext implements RealtimeClockListener {
     }
     public static boolean showWeather() {
     	Boolean weatherDisabled = (Boolean)Configuration.getInstance().getKeyValue(MusicalClockContext.KEY_WEATHER_DISABLED);
-    	if(weatherDisabled!= null && weatherDisabled.booleanValue()) {
+    	if((weatherDisabled!= null && weatherDisabled.booleanValue()) || isTrialExpired()) {
     		return false;
     	}
     	return true;
@@ -102,6 +109,25 @@ class MusicalClockContext implements RealtimeClockListener {
         checkWeather();
     } 
     private void checkWeather() {
+    	if(free_version) {
+    		boolean trialExpired = isTrialExpired();
+    		if(trialExpired) {
+	            Boolean expireDialogShown = (Boolean)(Configuration.getInstance().getKeyValue(MusicalClockContext.KEY_TRIAL_EXPIRE_SHOWN));
+	            if(expireDialogShown != null && expireDialogShown.booleanValue() == false) {
+	            	
+	                UiApplication.getUiApplication().invokeLater(new Runnable() 
+	                {
+	                	public void run() {
+	                		UpgradeDialog.show(true);
+	                	}
+	                });
+                    Configuration.getInstance().setKeyValue(MusicalClockContext.KEY_TRIAL_EXPIRE_SHOWN, new Boolean(true));
+                    Configuration.getInstance().saveSettings();
+	            }
+	            return;
+    		} // trial expired
+    	}
+    	
     	if(!showWeather()) {
     		return;
     	}

@@ -76,6 +76,13 @@ public class KtListItem extends Field implements DrawStyle {
         _details = details;
     }
     
+    public String getDetails() {
+    	return _details;
+    }
+    
+    public String getTitle() {
+    	return _title;
+    }
     public void setIndicatorStyle(int indicatorStyle) {
         _indicatorStyle = indicatorStyle;
     }
