@@ -504,7 +504,7 @@ public class AlarmEditScreen extends MainScreen implements FieldChangeListener,
             if(_alarmItem._alarmToneType == AlarmItem.TONE_MUSIC) {
                 fc = (FileConnection)Connector.open("file:///" + uri);
                 if(fc.isDirectory() && Configuration.isFreeVersion()) {
-                    UpgradeDialog.show();
+                    UpgradeDialog.show(false);
                     //Dialog.alert("The free version can only play a single song for an alarm, please upgrade to full version to use this feature.");
                     return false;
                 }
@@ -512,7 +512,7 @@ public class AlarmEditScreen extends MainScreen implements FieldChangeListener,
             else if(_alarmItem._alarmToneType == AlarmItem.TONE_RADIO_SOFTWARE) {
                 // free version does not have radio
                 if(Configuration.isFreeVersion()) {
-                    UpgradeDialog.show();
+                    UpgradeDialog.show(false);
                     return false;
                 }
             }

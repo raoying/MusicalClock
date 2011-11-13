@@ -19,12 +19,13 @@ import com.karvitech.api.appTools.*;
  * 
  */
 class UpgradeDialog  {
-    static String STR_UPGRADE = "Please check out the full version, which supports:\n  Unlimited Alarms\n  Ability to set playlist for alarms\n  5 LED colors\n Use radio such as Pandora for alarms. \nNotes: Please delete the free version if you install the full version, otherwise it will not work.";
+	static String STR_TRIAL_EXPIRED = "Trial expired for the weather feature.\n";
+    static String STR_UPGRADE = "Please check out the full version, which supports:\n  Weather forecasts\n  Unlimited Alarms\n  Ability to set playlist for alarms\n  5 LED colors\n Use radio such as Pandora for alarms. \nNotes: Please delete the free version if you install the full version, otherwise it will not work.";
     static String STR_APPWORLD = "App World";
     static String STR_MOBIHAND = "Mobihand Store";
     static String STR_NO_THANKS = "No, thanks";
     
-    static public void show() {
+    static public void show(boolean trialExpired) {
 
             Object[] list = new Object[3];
             list[0] = STR_APPWORLD;
@@ -37,7 +38,8 @@ class UpgradeDialog  {
             indexList[1] = 1;
             indexList[2] = 2;
             
-            Dialog dlg = new Dialog(STR_UPGRADE, list, indexList, 0, null);
+            String message = trialExpired?(STR_TRIAL_EXPIRED + STR_UPGRADE):STR_UPGRADE;
+            Dialog dlg = new Dialog(message, list, indexList, 0, null);
             int displayFontSize = 15;
             if(Display.getHeight()*Display.getWidth() >= 480*320) {
                 displayFontSize = 25;

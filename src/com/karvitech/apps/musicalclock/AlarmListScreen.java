@@ -126,7 +126,7 @@ class AlarmListScreen extends MainScreen implements FocusChangeListener, FieldCh
         if(Configuration.isFreeVersion())  {
             if(_alarmSettings.size() >= 2) {
                 //Dialog.inform("The free version supports 2 alarms. The full version supports unlimited alarms. Please check out the full version.");
-                UpgradeDialog.show();
+                UpgradeDialog.show(false);
                 return;
             } 
         }             

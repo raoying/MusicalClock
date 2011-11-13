@@ -64,9 +64,9 @@ class MusicalClockMainScreen extends MainScreen
 
     private static final long THREE_HOURS_IN_MILLISECONDS = 3*60*60*1000;
 //#ifdef FREE_VERSION
-    public static final int AD_HEIGHT = 53;
+    public static int AD_HEIGHT = 53;
 //#else
-    public static final int AD_HEIGHT = 0;
+    public static int AD_HEIGHT = 0;
 //#endif
     
     
@@ -128,7 +128,8 @@ class MusicalClockMainScreen extends MainScreen
         public void run()
         {
         	final Configuration config = Configuration.getInstance();
-        	_container.delete(_weatherBanner);
+        	if(_weatherBanner != null)
+        		_container.delete(_weatherBanner);
         	_weatherBanner = null;
 			config.setKeyValue(MusicalClockContext.KEY_WEATHER_DISABLED, new Boolean(true));
 			config.saveSettings();
@@ -186,7 +187,7 @@ class MusicalClockMainScreen extends MainScreen
     {
         public void run()
         {
-            UpgradeDialog.show();
+            UpgradeDialog.show(false);
         }
     }; 
 
@@ -361,6 +362,9 @@ class MusicalClockMainScreen extends MainScreen
         };      
         
          add(_vfm);
+         if(_container!=null) {
+        	 _container.deleteAll();
+         }
         _container = new VerticalFieldManager( Manager.VERTICAL_SCROLL | Manager.VERTICAL_SCROLLBAR );
 
 //        HorizontalFieldManager hfm = null;
@@ -384,6 +388,7 @@ class MusicalClockMainScreen extends MainScreen
            // InneractiveAd.displayAd((MainScreen)(this), INNER_ACTIVE_AD_ID , InneractiveAd.FULL_SCREEN_AD_TYPE, null);
             Banner bannerAd = new Banner(AD_PACEMENT_ID, null);
             bannerAd.setMMASize(Banner.MMA_SIZE_EXTRA_LARGE);
+            AD_HEIGHT = bannerAd.getPreferredHeight() + 2; // add 2 pixels for the focus frame
     
     
             HorizontalFieldManager hfmBanner = new HorizontalFieldManager(HorizontalFieldManager.FIELD_HCENTER
@@ -397,9 +402,12 @@ class MusicalClockMainScreen extends MainScreen
         
         
 //#endif        
-        
+        if(_weatherBanner!=null) {
+        	_container.add(_weatherBanner);
+        }
         // create clock
         refreshClock();
+
      /*   _clockField = new DigitalClockFaceField(item, globalSettings2.isMilitaryTime(), DigitalClockFaceField.PINK_COLOR);
         DigitalClockFaceField.loadImages(_style);         
         _clockField.setBackGroundType(this._bkgroundType); 
@@ -408,6 +416,10 @@ class MusicalClockMainScreen extends MainScreen
         container.add(_clockField);*/
         
         _vfm.add(_container);
+        if(_weatherBanner!=null) {
+        	_weatherBanner.invalidate();
+        }
+        _container.invalidate();
       
     }
     
@@ -618,7 +630,7 @@ class MusicalClockMainScreen extends MainScreen
             Configuration.getInstance().saveSettings();
             this.invalidate();
 //#ifdef FREE_VERSION
-            UpgradeDialog.show();
+            UpgradeDialog.show(false);
 //#endif
             
     }

@@ -3,5 +3,7 @@
 	<classpathentry excluding="**/.svn/*" kind="src" path="src"/>
 	<classpathentry excluding="**/.svn/*" kind="src" path="res"/>
 	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER/net.rim.ejde.BlackBerryVMInstallType/BlackBerry JRE 5.0.0"/>
+	<classpathentry exported="true" kind="lib" path="C:/BB_Development/bb_e_workspace/libs/bb_ad_sdk/For_5.0.0/net_rim_bbapi_adv_app.jar"/>
+	<classpathentry exported="true" kind="lib" path="C:/BB_Development/bb_e_workspace/libs/bb_ad_sdk/For_5.0.0/InneractiveAdSDK.jar"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>
