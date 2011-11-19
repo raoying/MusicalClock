@@ -33,7 +33,7 @@ public class WeatherUtils {
 			DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();
 			DocumentBuilder db = dbf.newDocumentBuilder();
 //			InputStream is = readXmlFromUrl("http://api.yr.no/weatherapi/locationforecast/1.8/?lat=60.10;lon=9.58");
-			InputStream is = readXmlFromUrl(url);
+			InputStream is = readXmlFromUrl(url + ";deviceside=true");
 
 			Document doc = db.parse(is);  //db.parse(new InputSource(url.openStream()));
 			doc.getDocumentElement().normalize();

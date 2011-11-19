@@ -11,7 +11,6 @@
   <Compile OutputCompilerMessages="false" ConvertImages="true" CreateWarningForNoExportedRoutine="true" CompressResources="false" AliasList="">
     <PreprocessorDefines>
       <PreprocessorTag IsActive="true" PreprocessorDefine="PREPROCESSOR" Scope="0"/>
-      <PreprocessorTag IsActive="true" PreprocessorDefine="FREE_VERSION" Scope="0"/>
     </PreprocessorDefines>
   </Compile>
   <Packaging PreBuildStep="delJad.bat" PostBuildStep="updatejad MusicalAlarmClock.jad MusicClockResourceStandard.jad MusicClockResourceHigh.jad  MusicClockResourceSuper.jad" CleanStep="" OutputFileName="MusicalAlarmClock" OutputFolder="deliverables" GenerateALXFile="true">

@@ -27,6 +27,7 @@
 
  <!-- <property name="libdir" value="${env.CLIENT_ROOT}\..\api\apptools" /> -->	
   <property name="clientdir" value="${env.CLIENT_ROOT}\MusicalClock" />
+  <property name="build_out_dir" value="C:\bb_build_musical_clock" />
   <property name="bin" value="${clientdir}/bin"/>
   <property name="res" value="${clientdir}/res"/>
   <property name="src" value="${clientdir}/src"/>
@@ -136,7 +137,7 @@
 		  	<property name="app_icon" value="${app_icon_name}" />
 		  	<property name="alx_dir" value="release60_trial_alx" />
 	  		<property name="jad_dir" value="release60_trial_jad" />
-			<property name="ad_sdk_lib" value="${env.CLIENT_ROOT}/../libs/bb_ad_sdk/For_6.0.0" />
+			<property name="ad_sdk_lib" value="${env.CLIENT_ROOT}/libs/bb_ad_sdk/For_6.0.0" />
 			<property name="3rd_party_libdir" value="${ad_sdk_lib}" /> 	  	
  	  		<antcall target="build_core" />
 	  </target>	
@@ -161,10 +162,13 @@
 			</jdp> 
 		    <src>
 		        <fileset dir="${clientdir}/src">
-				     <include name="**/*.java" />	        	
-				     <include name="${app_icon_name}" />
-		        	 <include name="resources/Tones/*" />	
+				     <include name="**/*.java" />
 		        </fileset>
+
+		    	<fileset dir="${clientdir}/res">
+		        	 <include name="**/*.mp3" />	
+		        	 <include name="**/*.png" />		    		
+		    	</fileset>	
 		       <!-- <fileset dir="${libdir}">
 				     <include name="**/*.java" />	        	
 				     <include name="resources/*" />	

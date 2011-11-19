@@ -64,7 +64,7 @@ class MusicalClockMainScreen extends MainScreen
 
     private static final long THREE_HOURS_IN_MILLISECONDS = 3*60*60*1000;
 //#ifdef FREE_VERSION
-    public static int AD_HEIGHT = 53;
+    public static int AD_HEIGHT = 59;
 //#else
     public static int AD_HEIGHT = 0;
 //#endif
@@ -396,7 +396,7 @@ class MusicalClockMainScreen extends MainScreen
            // InneractiveAd.displayAd((MainScreen)(this), INNER_ACTIVE_AD_ID , InneractiveAd.FULL_SCREEN_AD_TYPE, null);
             Banner bannerAd = new Banner(AD_PACEMENT_ID, null);
             bannerAd.setMMASize(Banner.MMA_SIZE_EXTRA_LARGE);
-            AD_HEIGHT = bannerAd.getPreferredHeight() + 2; // add 2 pixels for the focus frame
+          //  AD_HEIGHT = bannerAd.getPreferredHeight() + 2; // add 2 pixels for the focus frame
     
     
             HorizontalFieldManager hfmBanner = new HorizontalFieldManager(HorizontalFieldManager.FIELD_HCENTER
