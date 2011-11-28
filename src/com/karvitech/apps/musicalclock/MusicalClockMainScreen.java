@@ -763,13 +763,18 @@ class MusicalClockMainScreen extends MainScreen
     
     // implements the listener
     public void configurationChanged() {
-        this.refreshClock();
+        
     	if(MusicalClockContext.showWeather()) {
     		Application.getApplication().invokeLater(new Runnable() {
     			public void run() {
     				refreshWeather();
     		}});
     	}
+    	else if(_weatherBanner != null) {
+    		_container.delete(_weatherBanner);
+    		_weatherBanner = null;
+    	}
+    	this.refreshClock();
     }
    /**
     * implement the RealtimeClockListener interface

@@ -113,14 +113,15 @@ class MusicalClockContext implements RealtimeClockListener {
     		boolean trialExpired = isTrialExpired();
     		if(trialExpired) {
 	            Boolean expireDialogShown = (Boolean)(Configuration.getInstance().getKeyValue(MusicalClockContext.KEY_TRIAL_EXPIRE_SHOWN));
-	            if(expireDialogShown != null && expireDialogShown.booleanValue() == false) {
-	            	
+	            if(expireDialogShown == null || expireDialogShown.booleanValue() == false) {
+	            	// the trial expired dialog has not been shown, show it
 	                UiApplication.getUiApplication().invokeLater(new Runnable() 
 	                {
 	                	public void run() {
 	                		UpgradeDialog.show(true);
 	                	}
 	                });
+	                Configuration.getInstance().setKeyValue(MusicalClockContext.KEY_WEATHER_DISABLED, new Boolean(true));
                     Configuration.getInstance().setKeyValue(MusicalClockContext.KEY_TRIAL_EXPIRE_SHOWN, new Boolean(true));
                     Configuration.getInstance().saveSettings();
 	            }
