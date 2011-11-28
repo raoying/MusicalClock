@@ -168,6 +168,7 @@
 		    	<fileset dir="${clientdir}/res">
 		        	 <include name="**/*.mp3" />	
 		        	 <include name="**/*.png" />		    		
+		    		 <include name="**/*.txt" />
 		    	</fileset>	
 		       <!-- <fileset dir="${libdir}">
 				     <include name="**/*.java" />	        	

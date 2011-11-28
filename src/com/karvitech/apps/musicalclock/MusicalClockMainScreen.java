@@ -70,8 +70,9 @@ class MusicalClockMainScreen extends MainScreen
 //#endif
     
     
-    
-    private static int AD_PACEMENT_ID = 34898;
+   // Your site id = 12142, your zone id = 25460, your advertiser id = 10911, your network owner id = 10736.
+    private static int AD_PACEMENT_ID = 34898; // older version uses this
+    private static int AD_ZONE_ID = 25460; // new version uses zone id
     private static String INNER_ACTIVE_AD_ID = "KarviTech_MusicalClock_BB";
     
     private long _lastCheckMilliSec; // last time checked weather state
@@ -394,8 +395,16 @@ class MusicalClockMainScreen extends MainScreen
         // add the ad
         try {
            // InneractiveAd.displayAd((MainScreen)(this), INNER_ACTIVE_AD_ID , InneractiveAd.FULL_SCREEN_AD_TYPE, null);
-            Banner bannerAd = new Banner(AD_PACEMENT_ID, null);
-            bannerAd.setMMASize(Banner.MMA_SIZE_EXTRA_LARGE);
+        	Banner bannerAd = new Banner(AD_PACEMENT_ID, null);
+        	//Banner bannerAd = new Banner(AD_ZONE_ID, null);
+        	if(Display.getHeight()*Display.getWidth() <= 320*240) {
+        		bannerAd.setMMASize(Banner.MMA_SIZE_LARGE); //216*36
+        		AD_HEIGHT = 46;
+        	}
+        	else {
+        		bannerAd.setMMASize(Banner.MMA_SIZE_EXTRA_LARGE); // 320*53
+        	}
+           // bannerAd.setTestModeFlag(true);
           //  AD_HEIGHT = bannerAd.getPreferredHeight() + 2; // add 2 pixels for the focus frame
     
     

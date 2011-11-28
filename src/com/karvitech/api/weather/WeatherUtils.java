@@ -10,6 +10,8 @@ import java.util.Vector;
 import javax.microedition.io.Connector;
 import javax.microedition.io.HttpConnection;
 
+import net.rim.device.api.ui.UiApplication;
+import net.rim.device.api.ui.component.Dialog;
 import net.rim.device.api.util.DateTimeUtilities;
 import net.rim.device.api.xml.parsers.DocumentBuilder;
 import net.rim.device.api.xml.parsers.DocumentBuilderFactory;
@@ -34,7 +36,7 @@ public class WeatherUtils {
 			DocumentBuilder db = dbf.newDocumentBuilder();
 //			InputStream is = readXmlFromUrl("http://api.yr.no/weatherapi/locationforecast/1.8/?lat=60.10;lon=9.58");
 			InputStream is = readXmlFromUrl(url + ";deviceside=true");
-
+			//InputStream is = readXmlFromUrl(url);
 			Document doc = db.parse(is);  //db.parse(new InputSource(url.openStream()));
 			doc.getDocumentElement().normalize();
 
@@ -107,6 +109,12 @@ public class WeatherUtils {
 			return forecasts;
 		}
 		catch(Exception e) {
+        	final String msg = "parseXML Exception: " + e.toString() + ". Message:" + e.getMessage();
+        	UiApplication.getUiApplication().invokeLater(new Runnable() {
+        		public void run() {
+        			Dialog.inform(msg);
+        		}
+        	});
 			e.printStackTrace();
 		}
 		return null;
@@ -180,6 +188,12 @@ public class WeatherUtils {
             return is;
         }
         catch (Exception e) {
+        	final String msg = "readXmlFromUrl Exception: " + e.toString() + ". Message:" + e.getMessage();
+        	UiApplication.getUiApplication().invokeLater(new Runnable() {
+        		public void run() {
+        			Dialog.inform(msg);
+        		}
+        	});
         	e.printStackTrace();
         }
         return null;
